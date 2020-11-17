@@ -12,7 +12,7 @@ interface GifterDocument extends Document {
 const GifterModel = model<GifterDocument>('Gifter', GifterSchema);
 
 const mapDocToEntity = (doc: GifterDocument): Gifter => {
-  return new Gifter(doc.name);
+  return new Gifter(doc.name, doc._id);
 };
 
 export default class MongoGifterRepository implements GifterRepository {
