@@ -1,7 +1,6 @@
 import { createLogger, transports, format } from 'winston';
 
 export default () => {
-  //TODO: Fix logger so that things like logger.info(a, b, c, ...) works
   const logger = createLogger({
     format: format.combine(
       format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
@@ -11,5 +10,23 @@ export default () => {
     ),
     transports: [new transports.Console()],
   });
-  return logger;
+  const stringify = (args: any[]) => args.join(' ');
+
+  const info = (...args: any[]) => {
+    logger.info(stringify(args));
+  };
+
+  const warn = (...args: any[]) => {
+    logger.warn(stringify(args));
+  };
+
+  const error = (...args: any[]) => {
+    logger.error(stringify(args));
+  };
+
+  return {
+    info,
+    warn,
+    error,
+  };
 };

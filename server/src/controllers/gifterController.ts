@@ -15,11 +15,11 @@ export default (dependencies: Dependencies) => {
     const result = await addGifterCommand.execute(name);
     if (result.isLeft()) {
       const failure = result.value;
-      logger.info('failed to add gifter', failure);
-      return res.status(422).send(result.value);
+      logger.info('failed to add gifter', JSON.stringify(failure));
+      return res.status(422).send({ failure });
     }
     const gifter = result.value;
-    logger.info('gifter added', gifter);
+    logger.info('gifter added', JSON.stringify(gifter));
     return res.status(201).send(gifter);
   };
   return {
