@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import Dependencies from '../../../application/Dependencies';
-import health from './health';
+import health from './healthRouter';
+import api from './api';
 
 export default (dependencies: Dependencies) => {
   const routes = Router();
 
-  const healthRouter = health(dependencies);
-  routes.use('/health', healthRouter);
+  routes.use('/health', health(dependencies));
+  routes.use('/api', api(dependencies));
 
   return routes;
 };
