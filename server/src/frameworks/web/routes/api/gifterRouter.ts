@@ -7,5 +7,6 @@ export default (dependencies: Dependencies) => {
   const controller = gifterController(dependencies);
   const router = Router();
   router.post('/', controller.createGifter);
+  router.get('/:id', controller.findGifter);
   return router;
 };
