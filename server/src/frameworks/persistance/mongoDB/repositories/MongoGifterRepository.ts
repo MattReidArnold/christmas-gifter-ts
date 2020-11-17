@@ -3,16 +3,23 @@ import { model, Schema, Document } from 'mongoose';
 import GifterRepository from '../../../../application/repositories/GifterRepository';
 import Gifter from '../../../../entities/Gifter';
 
-const GifterSchema = new Schema({ name: String });
+const GifterSchema = new Schema({
+  name: String,
+  doNotGiftFrom: [String],
+  giftTo: String,
+});
 
 interface GifterDocument extends Document {
   name: string;
+  doNotGiftFrom: string[];
+  giftTo?: string;
 }
 
 const GifterModel = model<GifterDocument>('Gifter', GifterSchema);
 
 const mapDocToEntity = (doc: GifterDocument): Gifter => {
-  return new Gifter(doc.name, doc._id);
+  const { name, doNotGiftFrom, giftTo, _id: id } = doc;
+  return new Gifter({ name, doNotGiftFrom, giftTo, id });
 };
 
 export default class MongoGifterRepository implements GifterRepository {
@@ -24,7 +31,7 @@ export default class MongoGifterRepository implements GifterRepository {
     return mapDocToEntity(doc);
   }
   async add(gifter: Gifter): Promise<Gifter> {
-    const doc = await GifterModel.create({ name: gifter.name });
+    const doc = await GifterModel.create(gifter);
     return mapDocToEntity(doc);
   }
 }

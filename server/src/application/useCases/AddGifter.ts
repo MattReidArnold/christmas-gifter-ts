@@ -15,7 +15,10 @@ type AddGifterResult = Either<
 
 export default (dependencies: Dependencies) => {
   const { gifterRepository, logger } = dependencies;
-  const execute = async (name: string): Promise<AddGifterResult> => {
+  const execute = async (
+    name: string,
+    doNotGiftFrom: string[]
+  ): Promise<AddGifterResult> => {
     //check if user name is valid
     if (!name.trim()) {
       return left(gifterNameEmptyFailure());
@@ -27,7 +30,9 @@ export default (dependencies: Dependencies) => {
       return left(gifterAlreadyExistsFailure());
     }
 
-    const gifter = await gifterRepository.add(new Gifter(name));
+    const gifter = await gifterRepository.add(
+      new Gifter({ name, doNotGiftFrom })
+    );
     return right(gifter);
   };
 

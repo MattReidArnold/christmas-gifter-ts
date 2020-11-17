@@ -14,7 +14,8 @@ export default (dependencies: Dependencies) => {
     _next: NextFunction
   ) => {
     const name: string = req.body.name ?? '';
-    const result = await addGifterCommand.execute(name);
+    const doNotGiftFrom: string[] = req.body.doNotGiftFrom ?? [];
+    const result = await addGifterCommand.execute(name, doNotGiftFrom);
     if (result.isLeft()) {
       const failure = result.value;
       logger.info('failed to add gifter', JSON.stringify(failure));
