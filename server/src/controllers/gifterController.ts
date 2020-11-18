@@ -3,11 +3,15 @@ import { Request, Response, NextFunction } from 'express';
 import Dependencies from '../application/Dependencies';
 import addGifter from '../application/useCases/AddGifter';
 import getGifter from '../application/useCases/GetGifter';
+import updateGifterUseCase from '../application/useCases/UpdateGifter';
 
 export default (dependencies: Dependencies) => {
   const { logger } = dependencies;
+
   const addGifterCommand = addGifter(dependencies);
   const getGifterCommand = getGifter(dependencies);
+  const updateGifterCommand = updateGifterUseCase(dependencies);
+
   const createGifter = async (
     req: Request,
     res: Response,
@@ -25,6 +29,7 @@ export default (dependencies: Dependencies) => {
     logger.info('gifter added', JSON.stringify(gifter));
     return res.status(201).send(gifter);
   };
+
   const findGifter = async (
     req: Request,
     res: Response,
@@ -40,8 +45,29 @@ export default (dependencies: Dependencies) => {
     return res.send(gifter);
   };
 
+  const updateGifter = async (
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const name: string = req.params.id ?? '';
+    const doNotGiftFrom: string[] | undefined = req.body.doNotGiftFrom;
+    const giftTo: string | undefined = req.body.giftTo;
+    const result = await updateGifterCommand.execute(name, {
+      doNotGiftFrom,
+      giftTo,
+    });
+    if (result.isLeft()) {
+      const failure = result.value;
+      return res.status(404).send({ failure });
+    }
+    const gifter = result.value;
+    return res.send(gifter);
+  };
+
   return {
     createGifter,
     findGifter,
+    updateGifter,
   };
 };

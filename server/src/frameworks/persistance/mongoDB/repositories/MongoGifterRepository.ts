@@ -34,4 +34,14 @@ export default class MongoGifterRepository implements GifterRepository {
     const doc = await GifterModel.create(gifter);
     return mapDocToEntity(doc);
   }
+  async update(gifter: Gifter): Promise<Gifter | null> {
+    const doc = await GifterModel.findOne({ name: gifter.name });
+    if (!doc) {
+      return null;
+    }
+    doc.doNotGiftFrom = gifter.doNotGiftFrom;
+    doc.giftTo = gifter.giftTo;
+    const updatedDoc = await doc.save();
+    return mapDocToEntity(updatedDoc);
+  }
 }

@@ -8,5 +8,6 @@ export default (dependencies: Dependencies) => {
   const router = Router();
   router.post('/', controller.createGifter);
   router.get('/:id', controller.findGifter);
+  router.put('/:id', controller.updateGifter);
   return router;
 };
