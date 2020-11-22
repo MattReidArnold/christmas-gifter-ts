@@ -2,6 +2,20 @@
 version: '3.1'
 
 services:
+  api:
+    build:
+      context: ./server
+      dockerfile: ./dev/Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - '4000:3000'
+    volumes:
+      - ./server:/app
+    environment:
+      - MONGODB_URI=mongodb://devUser:Password123@mongo:27017/dev
+    command: npm run dev
+
   mongo:
     image: mongo
     restart: always
@@ -14,6 +28,7 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./mongo-volume:/data/db
+
   mongo-express:
     image: mongo-express
     restart: always
