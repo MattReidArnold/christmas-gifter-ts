@@ -4,10 +4,11 @@ import morgan from 'morgan';
 
 import router from './routes';
 import Dependencies from '../../application/Dependencies';
+import { env } from '../../config/env';
+
+const port = env.PORT;
 
 export default (dependencies: Dependencies) => {
-  const port = process.env.PORT || 3000;
-
   const app = express();
 
   app.use(morgan('dev'));
