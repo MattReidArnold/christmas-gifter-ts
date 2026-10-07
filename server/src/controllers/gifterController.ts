@@ -31,7 +31,7 @@ export default (dependencies: Dependencies) => {
   };
 
   const findGifter = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     _next: NextFunction
   ) => {
@@ -46,7 +46,7 @@ export default (dependencies: Dependencies) => {
   };
 
   const updateGifter = async (
-    req: Request,
+    req: Request<{ id: string }>,
     res: Response,
     _next: NextFunction
   ) => {

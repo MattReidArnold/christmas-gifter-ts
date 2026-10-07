@@ -3,7 +3,7 @@ import Gifter from '../../../../entities/Gifter';
 
 interface GifterAttrs {
   name: string;
-  doNotGiftFrom: [String];
+  doNotGiftFrom: string[];
   giftTo?: string;
 }
 

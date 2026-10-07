@@ -4,9 +4,6 @@ import { env } from '../../../config/env';
 
 export default (logger: Logger) => {
   return mongoose
-    .connect(env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
+    .connect(env.MONGODB_URI)
     .then(() => logger.info('Connected to MongoDB'));
 };
