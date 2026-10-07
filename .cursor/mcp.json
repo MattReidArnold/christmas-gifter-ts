@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+        "serena": {
+            "command": "/Users/matt/.local/bin/serena",
+            "args": [
+                "start-mcp-server",
+                "--context",
+                "ide",
+                "--project",
+                "/Users/matt/Code/christmas-gifter-ts",
+                "--open-web-dashboard",
+                "False"
+            ]
+        }
+    }
+}
