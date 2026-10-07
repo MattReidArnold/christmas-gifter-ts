@@ -3,7 +3,7 @@ import Dependencies from '../../../application/Dependencies';
 import health from './healthRouter';
 import api from './api';
 
-export default (dependencies: Dependencies) => {
+const router = (dependencies: Dependencies) => {
   const routes = Router();
 
   routes.use('/health', health(dependencies));
@@ -11,3 +11,5 @@ export default (dependencies: Dependencies) => {
 
   return routes;
 };
+
+export default router;

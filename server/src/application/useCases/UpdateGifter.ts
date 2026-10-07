@@ -18,7 +18,7 @@ type UpdateGifterParams = {
   giftTo: string | undefined;
 };
 
-export default (dependencies: Dependencies) => {
+const updateGifterUseCase = (dependencies: Dependencies) => {
   const { gifterRepository } = dependencies;
   const execute = async (
     name: string,
@@ -47,6 +47,8 @@ export default (dependencies: Dependencies) => {
     execute,
   };
 };
+
+export default updateGifterUseCase;
 
 const gifterNotFoundFailure = (): Failure<UpdateGifter.GifterNotFound> => ({
   type: UpdateGifter.GifterNotFound,

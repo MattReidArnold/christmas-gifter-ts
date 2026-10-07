@@ -5,7 +5,7 @@ import addGifter from '../application/useCases/AddGifter';
 import getGifter from '../application/useCases/GetGifter';
 import updateGifterUseCase from '../application/useCases/UpdateGifter';
 
-export default (dependencies: Dependencies) => {
+const gifterController = (dependencies: Dependencies) => {
   const { logger } = dependencies;
 
   const addGifterCommand = addGifter(dependencies);
@@ -71,3 +71,5 @@ export default (dependencies: Dependencies) => {
     updateGifter,
   };
 };
+
+export default gifterController;

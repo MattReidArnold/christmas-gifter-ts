@@ -9,7 +9,7 @@ export enum GetGifter {
 
 type GetGifterResult = Either<Failure<GetGifter.GifterNotFound>, Gifter>;
 
-export default (dependencies: Dependencies) => {
+const getGifter = (dependencies: Dependencies) => {
   const { gifterRepository } = dependencies;
   const execute = async (name: string): Promise<GetGifterResult> => {
     //check if user exists by name
@@ -24,6 +24,8 @@ export default (dependencies: Dependencies) => {
     execute,
   };
 };
+
+export default getGifter;
 
 const gifterNotFoundFailure = (): Failure<GetGifter.GifterNotFound> => ({
   type: GetGifter.GifterNotFound,

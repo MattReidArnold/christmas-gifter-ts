@@ -13,7 +13,7 @@ type AddGifterResult = Either<
   Gifter
 >;
 
-export default (dependencies: Dependencies) => {
+const addGifter = (dependencies: Dependencies) => {
   const { gifterRepository, logger } = dependencies;
   const execute = async (
     name: string,
@@ -40,6 +40,8 @@ export default (dependencies: Dependencies) => {
     execute,
   };
 };
+
+export default addGifter;
 
 const gifterNameEmptyFailure = (): Failure<AddGifterError.GifterNameEmpty> => ({
   type: AddGifterError.GifterNameEmpty,

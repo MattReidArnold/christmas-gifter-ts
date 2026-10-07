@@ -7,7 +7,7 @@ import { env } from '../../config/env';
 
 const port = env.PORT;
 
-export default (dependencies: Dependencies) => {
+const server = (dependencies: Dependencies) => {
   const app = express();
 
   app.use(morgan('dev'));
@@ -20,3 +20,5 @@ export default (dependencies: Dependencies) => {
     console.log(`Listening on port ${port}`);
   });
 };
+
+export default server;
