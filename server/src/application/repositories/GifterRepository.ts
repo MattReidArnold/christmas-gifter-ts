@@ -1,4 +1,4 @@
-import Gifter from '../../entities/Gifter';
+import Gifter from '#src/entities/Gifter';
 
 export default interface GifterRepository {
   getByName: (name: string) => Promise<Gifter | null>;

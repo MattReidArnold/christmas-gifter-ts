@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-import Dependencies from '../application/Dependencies';
-import addGifter from '../application/useCases/AddGifter';
-import getGifter from '../application/useCases/GetGifter';
-import updateGifterUseCase from '../application/useCases/UpdateGifter';
+import Dependencies from '#src/application/Dependencies';
+import addGifter from '#src/application/useCases/AddGifter';
+import getGifter from '#src/application/useCases/GetGifter';
+import updateGifterUseCase from '#src/application/useCases/UpdateGifter';
 
 const gifterController = (dependencies: Dependencies) => {
   const { logger } = dependencies;

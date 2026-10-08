@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import Dependencies from '../../../../application/Dependencies';
-import gifterController from '../../../../controllers/gifterController';
+import Dependencies from '#src/application/Dependencies';
+import gifterController from '#src/controllers/gifterController';
 
 const gifterRouter = (dependencies: Dependencies) => {
   const controller = gifterController(dependencies);

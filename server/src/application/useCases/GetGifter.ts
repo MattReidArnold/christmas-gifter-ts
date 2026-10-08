@@ -1,7 +1,7 @@
-import Gifter from '../../entities/Gifter';
-import Dependencies from '../Dependencies';
-import { Either, left, right } from '../Either';
-import { Failure } from '../Failure';
+import Gifter from '#src/entities/Gifter';
+import Dependencies from '#src/application/Dependencies';
+import { Either, left, right } from '#src/application/Either';
+import { Failure } from '#src/application/Failure';
 
 export enum GetGifter {
   GifterNotFound = 'GIFTER_NOT_FOUND',

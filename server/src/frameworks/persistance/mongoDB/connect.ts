@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Logger from '../../../application/Logger';
-import { env } from '../../../config/env';
+import Logger from '#src/application/Logger';
+import { env } from '#src/config/env';
 
 const mongoConnect = (logger: Logger) => {
   return mongoose

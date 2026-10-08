@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Dependencies from '../../../application/Dependencies';
+import Dependencies from '#src/application/Dependencies';
 import health from './healthRouter';
 import api from './api';
 

@@ -1,6 +1,6 @@
-import GifterRepository from '../../../../application/repositories/GifterRepository';
-import Gifter from '../../../../entities/Gifter';
-import GifterModel from '../models/Gifter';
+import GifterRepository from '#src/application/repositories/GifterRepository';
+import Gifter from '#src/entities/Gifter';
+import GifterModel from '#src/frameworks/persistance/mongoDB/models/Gifter';
 
 export default class MongoGifterRepository implements GifterRepository {
   async getByName(name: string): Promise<Gifter | null> {

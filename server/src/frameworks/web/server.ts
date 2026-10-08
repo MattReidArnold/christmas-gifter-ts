@@ -2,8 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 
 import router from './routes';
-import Dependencies from '../../application/Dependencies';
-import { env } from '../../config/env';
+import Dependencies from '#src/application/Dependencies';
+import { env } from '#src/config/env';
 
 const port = env.PORT;
 

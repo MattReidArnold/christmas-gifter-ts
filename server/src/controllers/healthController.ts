@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Dependencies from '../application/Dependencies';
+import Dependencies from '#src/application/Dependencies';
 
 const healthController = (dependencies: Dependencies) => {
   const { logger } = dependencies;

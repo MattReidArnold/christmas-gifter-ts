@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import Dependencies from '../../../../application/Dependencies';
+import Dependencies from '#src/application/Dependencies';
 import gifterRouter from './gifterRouter';
 
 const apiRouter = (dependencies: Dependencies) => {

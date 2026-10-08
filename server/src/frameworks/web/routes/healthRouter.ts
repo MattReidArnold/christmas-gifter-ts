@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import Dependencies from '../../../application/Dependencies';
+import Dependencies from '#src/application/Dependencies';
 
-import healthController from '../../../controllers/healthController';
+import healthController from '#src/controllers/healthController';
 
 const healthRouter = (dependencies: Dependencies) => {
   const controller = healthController(dependencies);
