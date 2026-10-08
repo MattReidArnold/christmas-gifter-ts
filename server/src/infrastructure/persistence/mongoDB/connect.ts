@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 import Logger from '#src/application/ports/Logger';
-import { env } from '#src/main/env';
 
-const mongoConnect = (logger: Logger) => {
+const mongoConnect = (logger: Logger, uri: string) => {
   return mongoose
-    .connect(env.MONGODB_URI)
+    .connect(uri)
     .then(() => logger.info('Connected to MongoDB'));
 };
 

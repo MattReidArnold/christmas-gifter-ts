@@ -3,11 +3,8 @@ import morgan from 'morgan';
 
 import router from './routes';
 import Dependencies from '#src/application/Dependencies';
-import { env } from '#src/main/env';
 
-const port = env.PORT;
-
-const server = (dependencies: Dependencies) => {
+const server = (dependencies: Dependencies, port: number) => {
   const app = express();
 
   app.use(morgan('dev'));
