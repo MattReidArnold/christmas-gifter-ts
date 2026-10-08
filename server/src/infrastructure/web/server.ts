@@ -3,7 +3,7 @@ import morgan from 'morgan';
 
 import router from './routes';
 import Dependencies from '#src/application/Dependencies';
-import { env } from '#src/config/env';
+import { env } from '#src/main/env';
 
 const port = env.PORT;
 

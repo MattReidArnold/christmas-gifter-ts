@@ -1,5 +1,5 @@
-import Logger from './Logger';
-import GifterRepository from './repositories/GifterRepository';
+import Logger from './ports/Logger';
+import GifterRepository from './ports/GifterRepository';
 
 export default interface Dependencies {
   logger: Logger;

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Gifter from '#src/entities/Gifter';
+import Gifter from '#src/domain/Gifter';
 
 interface GifterAttrs {
   name: string;

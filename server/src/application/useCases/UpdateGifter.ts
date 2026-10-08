@@ -1,4 +1,4 @@
-import Gifter from '#src/entities/Gifter';
+import Gifter from '#src/domain/Gifter';
 import Dependencies from '#src/application/Dependencies';
 import { Either, left, right } from '#src/application/Either';
 import { Failure } from '#src/application/Failure';
