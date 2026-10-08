@@ -14,7 +14,7 @@ type AddGifterResult = Either<
 >;
 
 const addGifter = (dependencies: Dependencies) => {
-  const { gifterRepository, logger } = dependencies;
+  const { gifterRepository } = dependencies;
   const execute = async (
     name: string,
     doNotGiftFrom: string[]
