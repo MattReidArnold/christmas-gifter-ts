@@ -35,6 +35,7 @@ services:
   mongo:
     image: mongo:9
     restart: always
+    command: ['mongod', '--quiet']
     ports:
       - 27017:27017
     environment:
@@ -46,10 +47,11 @@ services:
       - mongo-data:/data/db
     healthcheck:
       test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
-      interval: 5s
+      interval: 30s
       timeout: 5s
-      retries: 10
-      start_period: 10s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
 
   mongo-express:
     image: mongo-express:1
