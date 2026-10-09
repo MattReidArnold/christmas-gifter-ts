@@ -1,0 +1,4 @@
+{
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^\\.\\./"],
+  "typescript.preferences.importModuleSpecifier": "shortest"
+}

@@ -1,0 +1,13 @@
+---
+description: Use Serena's language-server tools for exploring TypeScript code
+alwaysApply: true
+---
+
+When exploring or navigating TypeScript code in `client/` or `server/`, prefer the Serena MCP tools over grep and whole-file reads:
+
+- `get_symbols_overview` to see what a file contains before reading it.
+- `find_symbol` (with `include_body` when needed) to read a specific function, class, or type.
+- `find_referencing_symbols` to find usages and callers.
+- `get_diagnostics_for_file` to check for type errors after editing a file.
+
+Fall back to grep or full file reads for non-code files or when you don't know a symbol name.
