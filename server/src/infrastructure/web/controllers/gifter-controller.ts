@@ -1,25 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 
-import Dependencies from '#src/application/Dependencies';
-import addGifter from '#src/application/useCases/AddGifter';
-import getGifter from '#src/application/useCases/GetGifter';
-import updateGifterUseCase from '#src/application/useCases/UpdateGifter';
+import Logger from '#src/application/ports/logger';
+import { AddGifterUseCase } from '#src/application/use-cases/add-gifter';
+import { GetGifterUseCase } from '#src/application/use-cases/get-gifter';
+import { UpdateGifterUseCase } from '#src/application/use-cases/update-gifter';
 
-const gifterController = (dependencies: Dependencies) => {
-  const { logger } = dependencies;
+type GifterControllerDeps = {
+  logger: Logger;
+  addGifter: AddGifterUseCase;
+  getGifter: GetGifterUseCase;
+  updateGifter: UpdateGifterUseCase;
+};
 
-  const addGifterCommand = addGifter(dependencies);
-  const getGifterCommand = getGifter(dependencies);
-  const updateGifterCommand = updateGifterUseCase(dependencies);
-
-  const createGifter = async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ) => {
+const gifterController = ({
+  logger,
+  addGifter,
+  getGifter,
+  updateGifter,
+}: GifterControllerDeps) => {
+  const create = async (req: Request, res: Response, _next: NextFunction) => {
     const name: string = req.body.name ?? '';
     const doNotGiftFrom: string[] = req.body.doNotGiftFrom ?? [];
-    const result = await addGifterCommand.execute(name, doNotGiftFrom);
+    const result = await addGifter.execute(name, doNotGiftFrom);
     if (result.isLeft()) {
       const failure = result.value;
       logger.info('failed to add gifter', JSON.stringify(failure));
@@ -30,13 +32,13 @@ const gifterController = (dependencies: Dependencies) => {
     return res.status(201).send(gifter);
   };
 
-  const findGifter = async (
+  const find = async (
     req: Request<{ id: string }>,
     res: Response,
     _next: NextFunction
   ) => {
     const name: string = req.params.id ?? '';
-    const result = await getGifterCommand.execute(name);
+    const result = await getGifter.execute(name);
     if (result.isLeft()) {
       const failure = result.value;
       return res.status(404).send({ failure });
@@ -45,7 +47,7 @@ const gifterController = (dependencies: Dependencies) => {
     return res.send(gifter);
   };
 
-  const updateGifter = async (
+  const update = async (
     req: Request<{ id: string }>,
     res: Response,
     _next: NextFunction
@@ -53,7 +55,7 @@ const gifterController = (dependencies: Dependencies) => {
     const name: string = req.params.id ?? '';
     const doNotGiftFrom: string[] | undefined = req.body.doNotGiftFrom;
     const giftTo: string | undefined = req.body.giftTo;
-    const result = await updateGifterCommand.execute(name, {
+    const result = await updateGifter.execute(name, {
       doNotGiftFrom,
       giftTo,
     });
@@ -66,9 +68,9 @@ const gifterController = (dependencies: Dependencies) => {
   };
 
   return {
-    createGifter,
-    findGifter,
-    updateGifter,
+    create,
+    find,
+    update,
   };
 };
 

@@ -1,15 +1,15 @@
-import Gifter from '#src/domain/Gifter';
-import Dependencies from '#src/application/Dependencies';
-import { Either, left, right } from '#src/application/Either';
-import { Failure } from '#src/application/Failure';
+import Gifter from '#src/domain/gifter';
+import { Either, left, right } from '#src/application/either';
+import { Failure } from '#src/application/failure';
+import GifterRepository from '#src/application/ports/gifter-repository';
 
-export enum UpdateGifter {
+export enum UpdateGifterError {
   GifterNotFound = 'GIFTER_NOT_FOUND',
   GifterSaveFailed = 'GIFTER_SAVE_FAILED',
 }
 
 type UpdateGifterResult = Either<
-  Failure<UpdateGifter.GifterNotFound | UpdateGifter.GifterSaveFailed>,
+  Failure<UpdateGifterError.GifterNotFound | UpdateGifterError.GifterSaveFailed>,
   Gifter
 >;
 
@@ -18,8 +18,11 @@ type UpdateGifterParams = {
   giftTo: string | undefined;
 };
 
-const updateGifterUseCase = (dependencies: Dependencies) => {
-  const { gifterRepository } = dependencies;
+type UpdateGifterDeps = {
+  gifterRepository: GifterRepository;
+};
+
+const updateGifter = ({ gifterRepository }: UpdateGifterDeps) => {
   const execute = async (
     name: string,
     params: UpdateGifterParams
@@ -48,13 +51,16 @@ const updateGifterUseCase = (dependencies: Dependencies) => {
   };
 };
 
-export default updateGifterUseCase;
+export type UpdateGifterUseCase = ReturnType<typeof updateGifter>;
 
-const gifterNotFoundFailure = (): Failure<UpdateGifter.GifterNotFound> => ({
-  type: UpdateGifter.GifterNotFound,
+export default updateGifter;
+
+const gifterNotFoundFailure = (): Failure<UpdateGifterError.GifterNotFound> => ({
+  type: UpdateGifterError.GifterNotFound,
   reason: 'Gifter with that name was not found',
 });
-const gifterSaveFailedFailure = (): Failure<UpdateGifter.GifterSaveFailed> => ({
-  type: UpdateGifter.GifterSaveFailed,
-  reason: 'Gifter update could not be saved at this time',
-});
+const gifterSaveFailedFailure =
+  (): Failure<UpdateGifterError.GifterSaveFailed> => ({
+    type: UpdateGifterError.GifterSaveFailed,
+    reason: 'Gifter update could not be saved at this time',
+  });

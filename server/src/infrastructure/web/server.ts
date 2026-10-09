@@ -2,16 +2,16 @@ import express from 'express';
 import morgan from 'morgan';
 
 import router from './routes';
-import Dependencies from '#src/application/Dependencies';
+import WebContext from './web-context';
 
-const server = (dependencies: Dependencies, port: number) => {
+const server = (context: WebContext, port: number) => {
   const app = express();
 
   app.use(morgan('dev'));
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
-  app.use(router(dependencies));
+  app.use(router(context));
 
   app.listen(port, () => {
     console.log(`Listening on port ${port}`);

@@ -1,7 +1,7 @@
-import Gifter from '#src/domain/Gifter';
-import Dependencies from '#src/application/Dependencies';
-import { Either, left, right } from '#src/application/Either';
-import { Failure } from '#src/application/Failure';
+import Gifter from '#src/domain/gifter';
+import { Either, left, right } from '#src/application/either';
+import { Failure } from '#src/application/failure';
+import GifterRepository from '#src/application/ports/gifter-repository';
 
 export enum AddGifterError {
   GifterNameEmpty = 'GIFTER_NAME_EMPTY',
@@ -13,8 +13,11 @@ type AddGifterResult = Either<
   Gifter
 >;
 
-const addGifter = (dependencies: Dependencies) => {
-  const { gifterRepository } = dependencies;
+type AddGifterDeps = {
+  gifterRepository: GifterRepository;
+};
+
+const addGifter = ({ gifterRepository }: AddGifterDeps) => {
   const execute = async (
     name: string,
     doNotGiftFrom: string[]
@@ -40,6 +43,8 @@ const addGifter = (dependencies: Dependencies) => {
     execute,
   };
 };
+
+export type AddGifterUseCase = ReturnType<typeof addGifter>;
 
 export default addGifter;
 

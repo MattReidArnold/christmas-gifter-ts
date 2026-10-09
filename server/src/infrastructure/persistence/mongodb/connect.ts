@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Logger from '#src/application/ports/Logger';
+import Logger from '#src/application/ports/logger';
 
 const mongoConnect = (logger: Logger, uri: string) => {
   return mongoose

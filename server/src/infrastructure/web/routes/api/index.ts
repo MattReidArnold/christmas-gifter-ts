@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
-import Dependencies from '#src/application/Dependencies';
-import gifterRouter from './gifterRouter';
+import WebContext from '#src/infrastructure/web/web-context';
+import gifterRouter from './gifter-router';
 
-const apiRouter = (dependencies: Dependencies) => {
+const apiRouter = (context: WebContext) => {
   const router = Router();
-  router.use('/gifters', gifterRouter(dependencies));
+  router.use('/gifters', gifterRouter(context));
   return router;
 };
 

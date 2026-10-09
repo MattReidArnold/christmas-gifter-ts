@@ -1,4 +1,4 @@
-import Gifter from '#src/domain/Gifter';
+import Gifter from '#src/domain/gifter';
 
 export default interface GifterRepository {
   getByName: (name: string) => Promise<Gifter | null>;

@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import Dependencies from '#src/application/Dependencies';
-import health from './healthRouter';
+import WebContext from '#src/infrastructure/web/web-context';
+import health from './health-router';
 import api from './api';
 
-const router = (dependencies: Dependencies) => {
+const router = (context: WebContext) => {
   const routes = Router();
 
-  routes.use('/health', health(dependencies));
-  routes.use('/api', api(dependencies));
+  routes.use('/health', health(context));
+  routes.use('/api', api(context));
 
   return routes;
 };
