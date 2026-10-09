@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "oxc", "import"],
+  "plugins": ["typescript", "oxc", "import", "unicorn"],
   "rules": {
-    "import/no-relative-parent-imports": "error"
+    "import/no-relative-parent-imports": "error",
+    "unicorn/filename-case": ["error", { "case": "kebabCase" }]
   }
 }
