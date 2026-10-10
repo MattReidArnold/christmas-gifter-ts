@@ -35,8 +35,15 @@ const statusForFailure = ({ type }: GroupFailure): number => {
       return 404;
     case GroupUseCaseError.GroupSaveFailed:
       return 500;
-    default:
+    case GiftExchangeGroupError.GroupNameEmpty:
+    case GiftExchangeGroupError.ParticipantNameEmpty:
+    case GiftExchangeGroupError.ParticipantNameTaken:
+    case GiftExchangeGroupError.InvalidExclusion:
       return 422;
+    default: {
+      const unhandled: never = type;
+      throw new Error(`No HTTP status mapped for failure ${unhandled}`);
+    }
   }
 };
 
