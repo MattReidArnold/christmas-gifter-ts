@@ -39,4 +39,13 @@ export default class MongoGiftExchangeGroupRepository
     const updatedDoc = await doc.save();
     return updatedDoc.toEntity();
   }
+  async delete(id: string): Promise<boolean> {
+    if (!mongoose.isValidObjectId(id)) {
+      return false;
+    }
+    const { deletedCount } = await GiftExchangeGroupModel.deleteOne({
+      _id: id,
+    }).exec();
+    return deletedCount > 0;
+  }
 }

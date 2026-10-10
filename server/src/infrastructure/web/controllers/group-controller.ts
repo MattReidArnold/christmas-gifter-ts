@@ -5,6 +5,7 @@ import { Failure } from '#src/domain/shared/failure';
 import Logger from '#src/application/ports/logger';
 import { AddParticipantUseCase } from '#src/application/use-cases/add-participant';
 import { CreateGroupUseCase } from '#src/application/use-cases/create-group';
+import { DeleteGroupUseCase } from '#src/application/use-cases/delete-group';
 import { GetGroupUseCase } from '#src/application/use-cases/get-group';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
 import { RemoveParticipantUseCase } from '#src/application/use-cases/remove-participant';
@@ -14,6 +15,7 @@ type GroupControllerDeps = {
   logger: Logger;
   createGroup: CreateGroupUseCase;
   getGroup: GetGroupUseCase;
+  deleteGroup: DeleteGroupUseCase;
   addParticipant: AddParticipantUseCase;
   updateParticipant: UpdateParticipantUseCase;
   removeParticipant: RemoveParticipantUseCase;
@@ -51,6 +53,7 @@ const groupController = ({
   logger,
   createGroup,
   getGroup,
+  deleteGroup,
   addParticipant,
   updateParticipant,
   removeParticipant,
@@ -77,6 +80,21 @@ const groupController = ({
       return sendFailure(res, result.value);
     }
     return res.send(result.value);
+  };
+
+  const remove = async (
+    req: Request<GroupParams>,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const { groupId } = req.params;
+    const result = await deleteGroup.execute(groupId);
+    if (result.isLeft()) {
+      logger.info('failed to delete group', JSON.stringify(result.value));
+      return sendFailure(res, result.value);
+    }
+    logger.info('group deleted', groupId);
+    return res.status(204).send();
   };
 
   const addMember = async (
@@ -129,6 +147,7 @@ const groupController = ({
   return {
     create,
     find,
+    remove,
     addMember,
     updateMember,
     removeMember,

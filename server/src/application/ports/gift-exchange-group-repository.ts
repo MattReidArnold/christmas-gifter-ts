@@ -4,4 +4,5 @@ export default interface GiftExchangeGroupRepository {
   getById: (id: string) => Promise<GiftExchangeGroup | null>;
   add: (group: GiftExchangeGroup) => Promise<GiftExchangeGroup>;
   update: (group: GiftExchangeGroup) => Promise<GiftExchangeGroup | null>;
+  delete: (id: string) => Promise<boolean>;
 }
