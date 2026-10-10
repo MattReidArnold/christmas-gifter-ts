@@ -48,6 +48,16 @@ The server has two Vitest suites. Run them from `server/`:
 - `npm run test:integration` sends HTTP requests to a running API, so start MongoDB and the server first (`npm run dev` or `docker compose up`). The tests target `http://localhost:4000` by default; set `API_BASE_URL` to point them elsewhere. They use the dev database and delete every group they create.
 - `npm run typecheck` type-checks the source and the tests.
 
+## Error handling
+
+The server follows these conventions:
+
+- Expected failures, such as validation errors or a missing group, are returned as a `Result` (`server/src/domain/shared/result.ts`) holding a typed `Failure`; they are never thrown. Check `result.ok` before reading `result.value`, and return `result` as-is to pass a failure up.
+- Repositories return `null` (or `false` from `delete`) when a record doesn't exist; the use case turns that into a `Failure`.
+- Only unexpected problems, such as a database outage or a bug, throw.
+- Use cases with no expected failures, such as `listGroups`, return plain values.
+- Every failure type must have an HTTP status in `statusForFailure` in the group controller; the compiler reports any that are missing.
+
 ## API requests (Bruno)
 
 The `bruno/` folder is a [Bruno](https://www.usebruno.com/) collection (Bruno 3 or newer) with requests for every API endpoint.
