@@ -1,6 +1,6 @@
 import Gifter from '#src/domain/gifter';
-import { Either, left, right } from '#src/application/either';
-import { Failure } from '#src/application/failure';
+import { Either, left, right } from '#src/domain/shared/either';
+import { Failure } from '#src/domain/shared/failure';
 import GifterRepository from '#src/application/ports/gifter-repository';
 
 export enum AddGifterError {
