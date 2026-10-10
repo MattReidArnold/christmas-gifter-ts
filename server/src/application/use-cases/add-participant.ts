@@ -1,7 +1,7 @@
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import { ParticipantValidationError } from '#src/domain/gift-exchange-group-error';
-import { Either, left, right } from '#src/domain/shared/either';
 import { Failure } from '#src/domain/shared/failure';
+import { Result, err, ok } from '#src/domain/shared/result';
 import GiftExchangeGroupRepository from '#src/application/ports/gift-exchange-group-repository';
 import IdGenerator from '#src/application/ports/id-generator';
 import {
@@ -10,9 +10,9 @@ import {
   groupSaveFailedFailure,
 } from '#src/application/use-cases/group-failures';
 
-type AddParticipantResult = Either<
-  Failure<GroupUseCaseError | ParticipantValidationError>,
-  GiftExchangeGroup
+type AddParticipantResult = Result<
+  GiftExchangeGroup,
+  Failure<GroupUseCaseError | ParticipantValidationError>
 >;
 
 type AddParticipantParams = {
@@ -32,7 +32,7 @@ const addParticipant = ({ groupRepository, idGenerator }: AddParticipantDeps) =>
   ): Promise<AddParticipantResult> => {
     const group = await groupRepository.getById(groupId);
     if (!group) {
-      return left(groupNotFoundFailure());
+      return err(groupNotFoundFailure());
     }
 
     const result = group.addParticipant({
@@ -40,15 +40,12 @@ const addParticipant = ({ groupRepository, idGenerator }: AddParticipantDeps) =>
       name,
       exclusions,
     });
-    if (result.isLeft()) {
-      return left(result.value);
+    if (!result.ok) {
+      return result;
     }
 
     const savedGroup = await groupRepository.update(result.value);
-    if (!savedGroup) {
-      return left(groupSaveFailedFailure());
-    }
-    return right(savedGroup);
+    return savedGroup ? ok(savedGroup) : err(groupSaveFailedFailure());
   };
 
   return {

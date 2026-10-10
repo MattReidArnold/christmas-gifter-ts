@@ -64,9 +64,9 @@ const groupController = ({
   const create = async (req: Request, res: Response, _next: NextFunction) => {
     const name = stringOrUndefined(req.body?.name) ?? '';
     const result = await createGroup.execute(name);
-    if (result.isLeft()) {
-      logger.info('failed to create group', JSON.stringify(result.value));
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      logger.info('failed to create group', JSON.stringify(result.error));
+      return sendFailure(res, result.error);
     }
     const group = result.value;
     logger.info('group created', JSON.stringify(group));
@@ -84,8 +84,8 @@ const groupController = ({
     _next: NextFunction
   ) => {
     const result = await getGroup.execute(req.params.groupId);
-    if (result.isLeft()) {
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      return sendFailure(res, result.error);
     }
     return res.send(result.value);
   };
@@ -97,9 +97,9 @@ const groupController = ({
   ) => {
     const { groupId } = req.params;
     const result = await deleteGroup.execute(groupId);
-    if (result.isLeft()) {
-      logger.info('failed to delete group', JSON.stringify(result.value));
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      logger.info('failed to delete group', JSON.stringify(result.error));
+      return sendFailure(res, result.error);
     }
     logger.info('group deleted', groupId);
     return res.status(204).send();
@@ -114,9 +114,9 @@ const groupController = ({
       name: stringOrUndefined(req.body?.name) ?? '',
       exclusions: stringArrayOrUndefined(req.body?.exclusions) ?? [],
     });
-    if (result.isLeft()) {
-      logger.info('failed to add participant', JSON.stringify(result.value));
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      logger.info('failed to add participant', JSON.stringify(result.error));
+      return sendFailure(res, result.error);
     }
     return res.status(201).send(result.value);
   };
@@ -131,9 +131,9 @@ const groupController = ({
       name: stringOrUndefined(req.body?.name),
       exclusions: stringArrayOrUndefined(req.body?.exclusions),
     });
-    if (result.isLeft()) {
-      logger.info('failed to update participant', JSON.stringify(result.value));
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      logger.info('failed to update participant', JSON.stringify(result.error));
+      return sendFailure(res, result.error);
     }
     return res.send(result.value);
   };
@@ -145,9 +145,9 @@ const groupController = ({
   ) => {
     const { groupId, participantId } = req.params;
     const result = await removeParticipant.execute(groupId, participantId);
-    if (result.isLeft()) {
-      logger.info('failed to remove participant', JSON.stringify(result.value));
-      return sendFailure(res, result.value);
+    if (!result.ok) {
+      logger.info('failed to remove participant', JSON.stringify(result.error));
+      return sendFailure(res, result.error);
     }
     return res.send(result.value);
   };

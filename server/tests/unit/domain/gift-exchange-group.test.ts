@@ -2,29 +2,29 @@ import { describe, expect, it } from 'vitest';
 
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 
-const emptyGroup = () => expectRight(GiftExchangeGroup.create('Family'));
+const emptyGroup = () => expectOk(GiftExchangeGroup.create('Family'));
 
 const groupWithAliceAndBob = () => {
-  const withAlice = expectRight(
+  const withAlice = expectOk(
     emptyGroup().addParticipant({ id: 'alice', name: 'Alice', exclusions: [] })
   );
-  return expectRight(
+  return expectOk(
     withAlice.addParticipant({ id: 'bob', name: 'Bob', exclusions: ['alice'] })
   );
 };
 
 describe('GiftExchangeGroup.create', () => {
   it('trims the name and starts with no participants', () => {
-    const group = expectRight(GiftExchangeGroup.create('  Family  '));
+    const group = expectOk(GiftExchangeGroup.create('  Family  '));
 
     expect(group.name).toBe('Family');
     expect(group.participants).toEqual([]);
   });
 
   it.each(['', '   '])('rejects the empty name %j', (name) => {
-    const failure = expectLeft(GiftExchangeGroup.create(name));
+    const failure = expectErr(GiftExchangeGroup.create(name));
 
     expect(failure.type).toBe(GiftExchangeGroupError.GroupNameEmpty);
   });
@@ -32,11 +32,11 @@ describe('GiftExchangeGroup.create', () => {
 
 describe('GiftExchangeGroup.addParticipant', () => {
   it('trims the name and removes duplicate exclusions', () => {
-    const group = expectRight(
+    const group = expectOk(
       emptyGroup().addParticipant({ id: 'alice', name: 'Alice', exclusions: [] })
     );
 
-    const updated = expectRight(
+    const updated = expectOk(
       group.addParticipant({
         id: 'bob',
         name: '  Bob  ',
@@ -51,7 +51,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
   });
 
   it('rejects an empty name', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       emptyGroup().addParticipant({ id: 'alice', name: '  ', exclusions: [] })
     );
 
@@ -59,7 +59,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
   });
 
   it('rejects a name already used in the group, ignoring case', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().addParticipant({
         id: 'carol',
         name: ' alice ',
@@ -71,7 +71,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
   });
 
   it('rejects an exclusion that is not a member of the group', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().addParticipant({
         id: 'carol',
         name: 'Carol',
@@ -83,7 +83,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
   });
 
   it('rejects excluding the new participant themselves', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().addParticipant({
         id: 'carol',
         name: 'Carol',
@@ -97,7 +97,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
 
 describe('GiftExchangeGroup.updateParticipant', () => {
   it('returns not found for an unknown participant', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().updateParticipant('unknown', { name: 'X' })
     );
 
@@ -105,7 +105,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
   });
 
   it('keeps fields that were not provided', () => {
-    const renamed = expectRight(
+    const renamed = expectOk(
       groupWithAliceAndBob().updateParticipant('bob', { name: 'Robert' })
     );
 
@@ -114,7 +114,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
       exclusions: ['alice'],
     });
 
-    const reExcluded = expectRight(
+    const reExcluded = expectOk(
       groupWithAliceAndBob().updateParticipant('bob', { exclusions: [] })
     );
 
@@ -125,7 +125,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
   });
 
   it("rejects renaming to another participant's name", () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().updateParticipant('bob', { name: 'ALICE' })
     );
 
@@ -133,7 +133,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
   });
 
   it('allows changing the case of their own name', () => {
-    const updated = expectRight(
+    const updated = expectOk(
       groupWithAliceAndBob().updateParticipant('bob', { name: 'BOB' })
     );
 
@@ -141,7 +141,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
   });
 
   it('rejects excluding themselves', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().updateParticipant('alice', {
         exclusions: ['alice'],
       })
@@ -153,7 +153,7 @@ describe('GiftExchangeGroup.updateParticipant', () => {
 
 describe('GiftExchangeGroup.removeParticipant', () => {
   it('returns not found for an unknown participant', () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       groupWithAliceAndBob().removeParticipant('unknown')
     );
 
@@ -161,11 +161,11 @@ describe('GiftExchangeGroup.removeParticipant', () => {
   });
 
   it("removes the participant and clears them from others' exclusions", () => {
-    const group = expectRight(
+    const group = expectOk(
       groupWithAliceAndBob().updateParticipant('alice', { exclusions: ['bob'] })
     );
 
-    const updated = expectRight(group.removeParticipant('bob'));
+    const updated = expectOk(group.removeParticipant('bob'));
 
     expect(updated.participants.map(({ id }) => id)).toEqual(['alice']);
     expect(updated.findParticipant('alice')?.exclusions).toEqual([]);

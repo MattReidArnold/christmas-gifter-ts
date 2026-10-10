@@ -1,7 +1,7 @@
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { Either, left, right } from '#src/domain/shared/either';
 import { Failure } from '#src/domain/shared/failure';
+import { Result, err, ok } from '#src/domain/shared/result';
 import GiftExchangeGroupRepository from '#src/application/ports/gift-exchange-group-repository';
 import {
   GroupUseCaseError,
@@ -9,9 +9,9 @@ import {
   groupSaveFailedFailure,
 } from '#src/application/use-cases/group-failures';
 
-type RemoveParticipantResult = Either<
-  Failure<GroupUseCaseError | GiftExchangeGroupError.ParticipantNotFound>,
-  GiftExchangeGroup
+type RemoveParticipantResult = Result<
+  GiftExchangeGroup,
+  Failure<GroupUseCaseError | GiftExchangeGroupError.ParticipantNotFound>
 >;
 
 type RemoveParticipantDeps = {
@@ -25,19 +25,16 @@ const removeParticipant = ({ groupRepository }: RemoveParticipantDeps) => {
   ): Promise<RemoveParticipantResult> => {
     const group = await groupRepository.getById(groupId);
     if (!group) {
-      return left(groupNotFoundFailure());
+      return err(groupNotFoundFailure());
     }
 
     const result = group.removeParticipant(participantId);
-    if (result.isLeft()) {
-      return left(result.value);
+    if (!result.ok) {
+      return result;
     }
 
     const savedGroup = await groupRepository.update(result.value);
-    if (!savedGroup) {
-      return left(groupSaveFailedFailure());
-    }
-    return right(savedGroup);
+    return savedGroup ? ok(savedGroup) : err(groupSaveFailedFailure());
   };
 
   return {

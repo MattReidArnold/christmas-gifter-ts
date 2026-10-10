@@ -1,12 +1,12 @@
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { Either, left, right } from '#src/domain/shared/either';
 import { Failure } from '#src/domain/shared/failure';
+import { Result, ok } from '#src/domain/shared/result';
 import GiftExchangeGroupRepository from '#src/application/ports/gift-exchange-group-repository';
 
-type CreateGroupResult = Either<
-  Failure<GiftExchangeGroupError.GroupNameEmpty>,
-  GiftExchangeGroup
+type CreateGroupResult = Result<
+  GiftExchangeGroup,
+  Failure<GiftExchangeGroupError.GroupNameEmpty>
 >;
 
 type CreateGroupDeps = {
@@ -16,10 +16,10 @@ type CreateGroupDeps = {
 const createGroup = ({ groupRepository }: CreateGroupDeps) => {
   const execute = async (name: string): Promise<CreateGroupResult> => {
     const result = GiftExchangeGroup.create(name);
-    if (result.isLeft()) {
-      return left(result.value);
+    if (!result.ok) {
+      return result;
     }
-    return right(await groupRepository.add(result.value));
+    return ok(await groupRepository.add(result.value));
   };
 
   return {

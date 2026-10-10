@@ -1,6 +1,6 @@
 import GiftExchangeGroupRepository from '#src/application/ports/gift-exchange-group-repository';
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
-import { expectRight } from '#tests/support/either';
+import { expectOk } from '#tests/support/result';
 
 type SeedParticipant = { id: string; name: string; exclusions?: string[] };
 
@@ -9,9 +9,9 @@ export const seedGroup = async (
   participants: SeedParticipant[] = [],
   name = 'Family'
 ): Promise<GiftExchangeGroup> => {
-  let group = expectRight(GiftExchangeGroup.create(name));
+  let group = expectOk(GiftExchangeGroup.create(name));
   for (const { id, name: participantName, exclusions = [] } of participants) {
-    group = expectRight(
+    group = expectOk(
       group.addParticipant({ id, name: participantName, exclusions })
     );
   }

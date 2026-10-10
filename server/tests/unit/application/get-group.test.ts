@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import getGroup from '#src/application/use-cases/get-group';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 import InMemoryGroupRepository from '#tests/support/in-memory-group-repository';
 import { seedGroup } from '#tests/support/seed-group';
 
@@ -18,7 +18,7 @@ describe('getGroup', () => {
       { id: 'alice', name: 'Alice' },
     ]);
 
-    const group = expectRight(
+    const group = expectOk(
       await getGroup({ groupRepository }).execute(seeded.id ?? '')
     );
 
@@ -26,7 +26,7 @@ describe('getGroup', () => {
   });
 
   it('returns not found for an unknown group', async () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       await getGroup({ groupRepository }).execute('missing')
     );
 

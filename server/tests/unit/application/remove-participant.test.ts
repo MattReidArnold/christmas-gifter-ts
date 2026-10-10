@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
 import removeParticipant from '#src/application/use-cases/remove-participant';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 import InMemoryGroupRepository from '#tests/support/in-memory-group-repository';
 import { seedGroup } from '#tests/support/seed-group';
 
@@ -23,7 +23,7 @@ describe('removeParticipant', () => {
   });
 
   it('removes the participant and saves the group', async () => {
-    const group = expectRight(await useCase.execute(groupId, 'alice'));
+    const group = expectOk(await useCase.execute(groupId, 'alice'));
 
     expect(group.findParticipant('alice')).toBeUndefined();
     expect(group.findParticipant('bob')?.exclusions).toEqual([]);
@@ -31,7 +31,7 @@ describe('removeParticipant', () => {
   });
 
   it('returns not found for an unknown group', async () => {
-    const failure = expectLeft(await useCase.execute('missing', 'alice'));
+    const failure = expectErr(await useCase.execute('missing', 'alice'));
 
     expect(failure.type).toBe(GroupUseCaseError.GroupNotFound);
   });
@@ -39,7 +39,7 @@ describe('removeParticipant', () => {
   it('returns the domain failure without saving', async () => {
     const update = vi.spyOn(groupRepository, 'update');
 
-    const failure = expectLeft(await useCase.execute(groupId, 'unknown'));
+    const failure = expectErr(await useCase.execute(groupId, 'unknown'));
 
     expect(failure.type).toBe(GiftExchangeGroupError.ParticipantNotFound);
     expect(update).not.toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe('removeParticipant', () => {
   it('returns save failed when the group cannot be saved', async () => {
     vi.spyOn(groupRepository, 'update').mockResolvedValue(null);
 
-    const failure = expectLeft(await useCase.execute(groupId, 'alice'));
+    const failure = expectErr(await useCase.execute(groupId, 'alice'));
 
     expect(failure.type).toBe(GroupUseCaseError.GroupSaveFailed);
   });

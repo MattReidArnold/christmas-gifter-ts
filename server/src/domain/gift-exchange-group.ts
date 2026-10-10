@@ -1,6 +1,6 @@
 import Participant from '#src/domain/participant';
-import { Either, left, right } from '#src/domain/shared/either';
 import { Failure } from '#src/domain/shared/failure';
+import { Result, err, ok } from '#src/domain/shared/result';
 import {
   GiftExchangeGroupError,
   ParticipantValidationError,
@@ -28,14 +28,14 @@ export interface ParticipantChanges {
   exclusions?: string[];
 }
 
-type ParticipantResult = Either<
-  Failure<ParticipantValidationError>,
-  GiftExchangeGroup
+type ParticipantResult = Result<
+  GiftExchangeGroup,
+  Failure<ParticipantValidationError>
 >;
 
-type ExistingParticipantResult = Either<
-  Failure<GiftExchangeGroupError.ParticipantNotFound | ParticipantValidationError>,
-  GiftExchangeGroup
+type ExistingParticipantResult = Result<
+  GiftExchangeGroup,
+  Failure<GiftExchangeGroupError.ParticipantNotFound | ParticipantValidationError>
 >;
 
 export default class GiftExchangeGroup {
@@ -52,12 +52,12 @@ export default class GiftExchangeGroup {
 
   static create(
     name: string
-  ): Either<Failure<GiftExchangeGroupError.GroupNameEmpty>, GiftExchangeGroup> {
+  ): Result<GiftExchangeGroup, Failure<GiftExchangeGroupError.GroupNameEmpty>> {
     const trimmedName = name.trim();
     if (!trimmedName) {
-      return left(groupNameEmptyFailure());
+      return err(groupNameEmptyFailure());
     }
-    return right(new GiftExchangeGroup({ name: trimmedName, participants: [] }));
+    return ok(new GiftExchangeGroup({ name: trimmedName, participants: [] }));
   }
 
   findParticipant(participantId: string): Participant | undefined {
@@ -82,7 +82,7 @@ export default class GiftExchangeGroup {
   ): ExistingParticipantResult {
     const existing = this.findParticipant(participantId);
     if (!existing) {
-      return left(participantNotFoundFailure());
+      return err(participantNotFoundFailure());
     }
     const participant = new Participant({
       id: existing.id,
@@ -97,9 +97,9 @@ export default class GiftExchangeGroup {
 
   removeParticipant(
     participantId: string
-  ): Either<Failure<GiftExchangeGroupError.ParticipantNotFound>, GiftExchangeGroup> {
+  ): Result<GiftExchangeGroup, Failure<GiftExchangeGroupError.ParticipantNotFound>> {
     if (!this.findParticipant(participantId)) {
-      return left(participantNotFoundFailure());
+      return err(participantNotFoundFailure());
     }
     const remaining = this.participants
       .filter(({ id }) => id !== participantId)
@@ -111,7 +111,7 @@ export default class GiftExchangeGroup {
             exclusions: p.exclusions.filter((id) => id !== participantId),
           })
       );
-    return right(this.withParticipants(remaining));
+    return ok(this.withParticipants(remaining));
   }
 
   private withValidParticipant(
@@ -119,10 +119,7 @@ export default class GiftExchangeGroup {
     participants: Participant[]
   ): ParticipantResult {
     const failure = this.validateParticipant(participant);
-    if (failure) {
-      return left(failure);
-    }
-    return right(this.withParticipants(participants));
+    return failure ? err(failure) : ok(this.withParticipants(participants));
   }
 
   private validateParticipant(

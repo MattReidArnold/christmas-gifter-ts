@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
 import updateParticipant from '#src/application/use-cases/update-participant';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 import InMemoryGroupRepository from '#tests/support/in-memory-group-repository';
 import { seedGroup } from '#tests/support/seed-group';
 
@@ -23,7 +23,7 @@ describe('updateParticipant', () => {
   });
 
   it('updates the participant and saves the group', async () => {
-    const group = expectRight(
+    const group = expectOk(
       await useCase.execute(groupId, 'alice', {
         name: undefined,
         exclusions: ['bob'],
@@ -35,7 +35,7 @@ describe('updateParticipant', () => {
   });
 
   it('returns not found for an unknown group', async () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute('missing', 'alice', {
         name: 'Al',
         exclusions: undefined,
@@ -48,7 +48,7 @@ describe('updateParticipant', () => {
   it('returns the domain failure without saving', async () => {
     const update = vi.spyOn(groupRepository, 'update');
 
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute(groupId, 'unknown', {
         name: 'X',
         exclusions: undefined,
@@ -62,7 +62,7 @@ describe('updateParticipant', () => {
   it('returns save failed when the group cannot be saved', async () => {
     vi.spyOn(groupRepository, 'update').mockResolvedValue(null);
 
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute(groupId, 'alice', {
         name: 'Al',
         exclusions: undefined,

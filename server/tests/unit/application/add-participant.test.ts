@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import addParticipant from '#src/application/use-cases/add-participant';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 import InMemoryGroupRepository from '#tests/support/in-memory-group-repository';
 import { seedGroup } from '#tests/support/seed-group';
 import SequentialIdGenerator from '#tests/support/sequential-id-generator';
@@ -25,7 +25,7 @@ describe('addParticipant', () => {
       { id: 'alice', name: 'Alice' },
     ]);
 
-    const group = expectRight(
+    const group = expectOk(
       await useCase.execute(id, { name: 'Bob', exclusions: ['alice'] })
     );
 
@@ -39,7 +39,7 @@ describe('addParticipant', () => {
   it('returns not found for an unknown group', async () => {
     const update = vi.spyOn(groupRepository, 'update');
 
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute('missing', { name: 'Bob', exclusions: [] })
     );
 
@@ -53,7 +53,7 @@ describe('addParticipant', () => {
     ]);
     const update = vi.spyOn(groupRepository, 'update');
 
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute(id, { name: 'alice', exclusions: [] })
     );
 
@@ -65,7 +65,7 @@ describe('addParticipant', () => {
     const { id = '' } = await seedGroup(groupRepository);
     vi.spyOn(groupRepository, 'update').mockResolvedValue(null);
 
-    const failure = expectLeft(
+    const failure = expectErr(
       await useCase.execute(id, { name: 'Bob', exclusions: [] })
     );
 

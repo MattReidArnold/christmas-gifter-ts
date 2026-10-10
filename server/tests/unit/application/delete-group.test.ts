@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import deleteGroup from '#src/application/use-cases/delete-group';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
-import { expectLeft, expectRight } from '#tests/support/either';
+import { expectErr, expectOk } from '#tests/support/result';
 import InMemoryGroupRepository from '#tests/support/in-memory-group-repository';
 import { seedGroup } from '#tests/support/seed-group';
 
@@ -16,13 +16,13 @@ describe('deleteGroup', () => {
   it('deletes the group', async () => {
     const { id = '' } = await seedGroup(groupRepository);
 
-    expectRight(await deleteGroup({ groupRepository }).execute(id));
+    expectOk(await deleteGroup({ groupRepository }).execute(id));
 
     expect(await groupRepository.getById(id)).toBeNull();
   });
 
   it('returns not found for an unknown group', async () => {
-    const failure = expectLeft(
+    const failure = expectErr(
       await deleteGroup({ groupRepository }).execute('missing')
     );
 
