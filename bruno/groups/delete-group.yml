@@ -1,0 +1,19 @@
+info:
+  name: Delete group
+  type: http
+  seq: 8
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/groups/{{groupId}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 204", function () {
+          expect(res.status).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
