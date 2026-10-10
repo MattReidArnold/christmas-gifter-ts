@@ -9,6 +9,10 @@ import GiftExchangeGroupModel, {
 export default class MongoGiftExchangeGroupRepository
   implements GiftExchangeGroupRepository
 {
+  async getAll(): Promise<GiftExchangeGroup[]> {
+    const docs = await GiftExchangeGroupModel.find().sort({ _id: 1 }).exec();
+    return docs.map((doc) => doc.toEntity());
+  }
   async getById(id: string): Promise<GiftExchangeGroup | null> {
     if (!mongoose.isValidObjectId(id)) {
       return null;

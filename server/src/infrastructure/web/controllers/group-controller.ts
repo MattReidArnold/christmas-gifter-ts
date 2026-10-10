@@ -8,6 +8,7 @@ import { CreateGroupUseCase } from '#src/application/use-cases/create-group';
 import { DeleteGroupUseCase } from '#src/application/use-cases/delete-group';
 import { GetGroupUseCase } from '#src/application/use-cases/get-group';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
+import { ListGroupsUseCase } from '#src/application/use-cases/list-groups';
 import { RemoveParticipantUseCase } from '#src/application/use-cases/remove-participant';
 import { UpdateParticipantUseCase } from '#src/application/use-cases/update-participant';
 
@@ -15,6 +16,7 @@ type GroupControllerDeps = {
   logger: Logger;
   createGroup: CreateGroupUseCase;
   getGroup: GetGroupUseCase;
+  listGroups: ListGroupsUseCase;
   deleteGroup: DeleteGroupUseCase;
   addParticipant: AddParticipantUseCase;
   updateParticipant: UpdateParticipantUseCase;
@@ -53,6 +55,7 @@ const groupController = ({
   logger,
   createGroup,
   getGroup,
+  listGroups,
   deleteGroup,
   addParticipant,
   updateParticipant,
@@ -68,6 +71,11 @@ const groupController = ({
     const group = result.value;
     logger.info('group created', JSON.stringify(group));
     return res.status(201).send(group);
+  };
+
+  const list = async (_req: Request, res: Response, _next: NextFunction) => {
+    const groups = await listGroups.execute();
+    return res.send(groups);
   };
 
   const find = async (
@@ -146,6 +154,7 @@ const groupController = ({
 
   return {
     create,
+    list,
     find,
     remove,
     addMember,

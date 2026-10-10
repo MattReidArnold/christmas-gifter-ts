@@ -6,6 +6,7 @@ import groupController from '#src/infrastructure/web/controllers/group-controlle
 const groupRouter = ({ logger, useCases }: WebContext) => {
   const controller = groupController({ logger, ...useCases });
   const router = Router();
+  router.get('/', controller.list);
   router.post('/', controller.create);
   router.get('/:groupId', controller.find);
   router.delete('/:groupId', controller.remove);
