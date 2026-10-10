@@ -1,0 +1,32 @@
+info:
+  name: Update participant
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/groups/{{groupId}}/participants/{{participantId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "exclusions": ["{{otherParticipantId}}"]
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+        test("Alice excludes Bob", function () {
+          const alice = res.body.participants.find(
+            (p) => p.id === bru.getVar("participantId")
+          );
+          expect(alice.exclusions).to.eql([bru.getVar("otherParticipantId")]);
+        });
+
+settings:
+  encodeUrl: true

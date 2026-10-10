@@ -40,6 +40,14 @@ npm start
 
 The client dev server forwards `/api` requests to the server on port 4000.
 
+## API requests (Bruno)
+
+The `bruno/` folder is a [Bruno](https://www.usebruno.com/) collection (Bruno 3 or newer) with requests for every API endpoint.
+
+1. In Bruno, open the collection from the `bruno/` folder.
+2. Select the `local` environment, which points at `http://localhost:4000`.
+3. Run the `groups` folder with the collection runner, or send the requests one at a time starting with "Create group". Each request saves the ids that the following requests need.
+
 ## Useful scripts
 
 | Folder   | Command         | What it does                            |

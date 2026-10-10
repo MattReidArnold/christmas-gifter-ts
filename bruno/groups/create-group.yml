@@ -1,0 +1,32 @@
+info:
+  name: Create group
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/groups"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Family 2026"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        bru.setVar("groupId", res.body.id);
+    - type: tests
+      code: |-
+        test("returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+        test("starts with no participants", function () {
+          expect(res.body.participants).to.eql([]);
+        });
+
+settings:
+  encodeUrl: true

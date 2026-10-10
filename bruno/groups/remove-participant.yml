@@ -1,0 +1,31 @@
+info:
+  name: Remove participant
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/groups/{{groupId}}/participants/{{otherParticipantId}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+        test("removes Bob from the group", function () {
+          const ids = res.body.participants.map((p) => p.id);
+          expect(ids).to.not.include(bru.getVar("otherParticipantId"));
+        });
+
+        test("removes Bob from Alice's exclusions", function () {
+          const alice = res.body.participants.find(
+            (p) => p.id === bru.getVar("participantId")
+          );
+          expect(alice.exclusions).to.eql([]);
+        });
+
+settings:
+  encodeUrl: true
