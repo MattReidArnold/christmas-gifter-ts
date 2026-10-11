@@ -50,7 +50,7 @@ The server has two Vitest suites. Run them from `server/`:
 
 ## Error handling
 
-The server follows these conventions:
+The server follows these conventions. See [server/src/domain/shared/README.md](server/src/domain/shared/README.md) for usage, examples, and how to add a new failure.
 
 - Expected failures, such as validation errors or a missing group, are returned as a `Result` (`server/src/domain/shared/result.ts`) holding a typed `Failure`; they are never thrown. Check `result.ok` before reading `result.value`, and return `result` as-is to pass a failure up.
 - Repositories return `null` (or `false` from `delete`) when a record doesn't exist; the use case turns that into a `Failure`.
