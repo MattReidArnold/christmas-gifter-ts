@@ -1,0 +1,37 @@
+info:
+  name: Add participant with exclusion
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/groups/{{groupId}}/participants"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Bob",
+        "exclusions": ["{{participantId}}"]
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const bob = (res.body.participants || []).find((p) => p.name === "Bob");
+        if (bob) {
+          bru.setVar("otherParticipantId", bob.id);
+        }
+    - type: tests
+      code: |-
+        test("returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+        test("Bob excludes Alice", function () {
+          const bob = res.body.participants.find((p) => p.name === "Bob");
+          expect(bob.exclusions).to.eql([bru.getVar("participantId")]);
+        });
+
+settings:
+  encodeUrl: true

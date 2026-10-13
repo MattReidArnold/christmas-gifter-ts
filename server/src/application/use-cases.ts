@@ -1,9 +1,17 @@
-import { AddGifterUseCase } from './use-cases/add-gifter';
-import { GetGifterUseCase } from './use-cases/get-gifter';
-import { UpdateGifterUseCase } from './use-cases/update-gifter';
+import { AddParticipantUseCase } from './use-cases/add-participant';
+import { CreateGroupUseCase } from './use-cases/create-group';
+import { DeleteGroupUseCase } from './use-cases/delete-group';
+import { GetGroupUseCase } from './use-cases/get-group';
+import { ListGroupsUseCase } from './use-cases/list-groups';
+import { RemoveParticipantUseCase } from './use-cases/remove-participant';
+import { UpdateParticipantUseCase } from './use-cases/update-participant';
 
 export default interface UseCases {
-  addGifter: AddGifterUseCase;
-  getGifter: GetGifterUseCase;
-  updateGifter: UpdateGifterUseCase;
+  createGroup: CreateGroupUseCase;
+  getGroup: GetGroupUseCase;
+  listGroups: ListGroupsUseCase;
+  deleteGroup: DeleteGroupUseCase;
+  addParticipant: AddParticipantUseCase;
+  updateParticipant: UpdateParticipantUseCase;
+  removeParticipant: RemoveParticipantUseCase;
 }

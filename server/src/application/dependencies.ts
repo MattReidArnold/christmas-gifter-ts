@@ -1,7 +1,9 @@
 import Logger from './ports/logger';
-import GifterRepository from './ports/gifter-repository';
+import GiftExchangeGroupRepository from './ports/gift-exchange-group-repository';
+import IdGenerator from './ports/id-generator';
 
 export default interface Dependencies {
   logger: Logger;
-  gifterRepository: GifterRepository;
+  groupRepository: GiftExchangeGroupRepository;
+  idGenerator: IdGenerator;
 }

@@ -1,0 +1,37 @@
+info:
+  name: Add participant
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/groups/{{groupId}}/participants"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Alice"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const alice = (res.body.participants || []).find((p) => p.name === "Alice");
+        if (alice) {
+          bru.setVar("participantId", alice.id);
+        }
+    - type: tests
+      code: |-
+        test("returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+        test("adds Alice to the group", function () {
+          const alice = res.body.participants.find((p) => p.name === "Alice");
+          expect(alice).to.exist;
+          expect(alice.exclusions).to.eql([]);
+        });
+
+settings:
+  encodeUrl: true

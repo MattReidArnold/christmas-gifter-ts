@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
 import WebContext from '#src/infrastructure/web/web-context';
-import gifterRouter from './gifter-router';
+import groupRouter from './group-router';
 
 const apiRouter = (context: WebContext) => {
   const router = Router();
-  router.use('/gifters', gifterRouter(context));
+  router.use('/groups', groupRouter(context));
   return router;
 };
 
