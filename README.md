@@ -40,6 +40,21 @@ npm start
 
 The client dev server forwards `/api` requests to the server on port 4000.
 
+## API endpoints
+
+| Method   | Path                                               | What it does                                    |
+| -------- | -------------------------------------------------- | ----------------------------------------------- |
+| `GET`    | `/api/groups`                                      | List groups                                     |
+| `POST`   | `/api/groups`                                      | Create a group (`{ name }`)                     |
+| `GET`    | `/api/groups/:groupId`                             | Get a group                                     |
+| `PUT`    | `/api/groups/:groupId`                             | Rename a group (`{ name }`)                     |
+| `DELETE` | `/api/groups/:groupId`                             | Delete a group                                  |
+| `POST`   | `/api/groups/:groupId/participants`                | Add a participant (`{ name, exclusions }`)      |
+| `PUT`    | `/api/groups/:groupId/participants/:participantId` | Update a participant (`{ name?, exclusions? }`) |
+| `DELETE` | `/api/groups/:groupId/participants/:participantId` | Remove a participant                            |
+
+Group and participant changes respond with the updated group. Failures respond with `{ failure: { type, reason } }`.
+
 ## Testing
 
 The server has two Vitest suites. Run them from `server/`:
@@ -47,6 +62,8 @@ The server has two Vitest suites. Run them from `server/`:
 - `npm test` runs the unit tests for the domain and application layers. They need no database or running server. Use `npm run test:watch` while developing.
 - `npm run test:integration` sends HTTP requests to a running API, so start MongoDB and the server first (`npm run dev` or `docker compose up`). The tests target `http://localhost:4000` by default; set `API_BASE_URL` to point them elsewhere. They use the dev database and delete every group they create.
 - `npm run typecheck` type-checks the source and the tests.
+
+The client tests (`npm test` in `client/`) render the whole route tree against an in-memory fake of the API, so they need no server. See [client/README.md](client/README.md) for the selector conventions UI tests should follow.
 
 ## Error handling
 
