@@ -9,6 +9,7 @@ const groupRouter = ({ logger, useCases }: WebContext) => {
   router.get('/', controller.list);
   router.post('/', controller.create);
   router.get('/:groupId', controller.find);
+  router.put('/:groupId', controller.rename);
   router.delete('/:groupId', controller.remove);
   router.post('/:groupId/participants', controller.addMember);
   router.put('/:groupId/participants/:participantId', controller.updateMember);
