@@ -13,6 +13,11 @@ export const groupKeys = {
   detail: (groupId: string) => ['groups', groupId] as const,
 }
 
+const groupPath = (groupId: string) => `/groups/${encodeURIComponent(groupId)}`
+
+const participantPath = (groupId: string, participantId: string) =>
+  `${groupPath(groupId)}/participants/${encodeURIComponent(participantId)}`
+
 export const groupsQuery = () =>
   queryOptions({
     queryKey: groupKeys.all,
@@ -22,22 +27,25 @@ export const groupsQuery = () =>
 export const groupQuery = (groupId: string) =>
   queryOptions({
     queryKey: groupKeys.detail(groupId),
-    queryFn: () => apiFetch<Group>(`/groups/${encodeURIComponent(groupId)}`),
+    queryFn: () => apiFetch<Group>(groupPath(groupId)),
   })
 
-const groupPath = (groupId: string) => `/groups/${encodeURIComponent(groupId)}`
-
-const participantPath = (groupId: string, participantId: string) =>
-  `${groupPath(groupId)}/participants/${encodeURIComponent(participantId)}`
+const addOrReplaceGroup = (groups: Group[] | undefined, group: Group) => {
+  if (!groups) {
+    return undefined
+  }
+  const exists = groups.some(({ id }) => id === group.id)
+  if (!exists) {
+    return [...groups, group]
+  }
+  return groups.map((existing) => (existing.id === group.id ? group : existing))
+}
 
 const cacheGroup = (queryClient: QueryClient, group: Group) => {
   queryClient.setQueryData(groupKeys.detail(group.id), group)
   queryClient.setQueryData<Group[]>(groupKeys.all, (groups) =>
-    groups?.some(({ id }) => id === group.id)
-      ? groups.map((existing) => (existing.id === group.id ? group : existing))
-      : groups && [...groups, group],
+    addOrReplaceGroup(groups, group),
   )
-  return queryClient.invalidateQueries({ queryKey: groupKeys.all, exact: true })
 }
 
 const useGroupMutation = <TVariables>(
@@ -71,13 +79,9 @@ export const useDeleteGroup = () => {
       )
       // Removing or refetching the detail would 404 the page that is still
       // mounted; marking it invalid makes the next loader fetch it again instead.
-      void queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: groupKeys.detail(groupId),
         refetchType: 'none',
-      })
-      return queryClient.invalidateQueries({
-        queryKey: groupKeys.all,
-        exact: true,
       })
     },
   })
