@@ -30,6 +30,28 @@ describe('GiftExchangeGroup.create', () => {
   });
 });
 
+describe('GiftExchangeGroup.rename', () => {
+  it('trims the new name and keeps the id and participants', () => {
+    const group = new GiftExchangeGroup({
+      id: 'group-1',
+      name: 'Family',
+      participants: groupWithAliceAndBob().participants,
+    });
+
+    const renamed = expectOk(group.rename('  Friends  '));
+
+    expect(renamed.id).toBe('group-1');
+    expect(renamed.name).toBe('Friends');
+    expect(renamed.participants).toEqual(group.participants);
+  });
+
+  it.each(['', '   '])('rejects the empty name %j', (name) => {
+    const failure = expectErr(emptyGroup().rename(name));
+
+    expect(failure.type).toBe(GiftExchangeGroupError.GroupNameEmpty);
+  });
+});
+
 describe('GiftExchangeGroup.addParticipant', () => {
   it('trims the name and removes duplicate exclusions', () => {
     const group = expectOk(
@@ -180,6 +202,7 @@ describe('GiftExchangeGroup immutability', () => {
     group.addParticipant({ id: 'carol', name: 'Carol', exclusions: ['alice'] });
     group.updateParticipant('bob', { name: 'Robert', exclusions: [] });
     group.removeParticipant('alice');
+    group.rename('Friends');
 
     expect(structuredClone(group)).toEqual(snapshot);
   });

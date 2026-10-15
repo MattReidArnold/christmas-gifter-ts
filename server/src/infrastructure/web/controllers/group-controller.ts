@@ -10,6 +10,7 @@ import { GetGroupUseCase } from '#src/application/use-cases/get-group';
 import { GroupUseCaseError } from '#src/application/use-cases/group-failures';
 import { ListGroupsUseCase } from '#src/application/use-cases/list-groups';
 import { RemoveParticipantUseCase } from '#src/application/use-cases/remove-participant';
+import { RenameGroupUseCase } from '#src/application/use-cases/rename-group';
 import { UpdateParticipantUseCase } from '#src/application/use-cases/update-participant';
 
 type GroupControllerDeps = {
@@ -17,6 +18,7 @@ type GroupControllerDeps = {
   createGroup: CreateGroupUseCase;
   getGroup: GetGroupUseCase;
   listGroups: ListGroupsUseCase;
+  renameGroup: RenameGroupUseCase;
   deleteGroup: DeleteGroupUseCase;
   addParticipant: AddParticipantUseCase;
   updateParticipant: UpdateParticipantUseCase;
@@ -63,6 +65,7 @@ const groupController = ({
   createGroup,
   getGroup,
   listGroups,
+  renameGroup,
   deleteGroup,
   addParticipant,
   updateParticipant,
@@ -92,6 +95,20 @@ const groupController = ({
   ) => {
     const result = await getGroup.execute(req.params.groupId);
     if (!result.ok) {
+      return sendFailure(res, result.error);
+    }
+    return res.send(result.value);
+  };
+
+  const rename = async (
+    req: Request<GroupParams>,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    const name = stringOrUndefined(req.body?.name) ?? '';
+    const result = await renameGroup.execute(req.params.groupId, name);
+    if (!result.ok) {
+      logger.info('failed to rename group', JSON.stringify(result.error));
       return sendFailure(res, result.error);
     }
     return res.send(result.value);
@@ -163,6 +180,7 @@ const groupController = ({
     create,
     list,
     find,
+    rename,
     remove,
     addMember,
     updateMember,

@@ -64,6 +64,38 @@ describe('GET /api/groups/:groupId', () => {
   );
 });
 
+describe('PUT /api/groups/:groupId', () => {
+  it('renames the group with a trimmed name', async () => {
+    const { body: group } = await api.createGroup();
+    const name = uniqueGroupName();
+
+    const response = await api.renameGroup(group.id, `  ${name}  `);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ ...group, name });
+    expect((await api.getGroup(group.id)).body).toEqual(response.body);
+  });
+
+  it.each(['   ', undefined])('rejects the empty name %j', async (name) => {
+    const { body: group } = await api.createGroup();
+
+    const response = await api.renameGroup(group.id, name);
+
+    expect(response.status).toBe(422);
+    expect(failureType(response)).toBe('GROUP_NAME_EMPTY');
+  });
+
+  it('returns 404 when the group does not exist', async () => {
+    const response = await api.renameGroup(
+      '000000000000000000000000',
+      'Friends'
+    );
+
+    expect(response.status).toBe(404);
+    expect(failureType(response)).toBe('GROUP_NOT_FOUND');
+  });
+});
+
 describe('DELETE /api/groups/:groupId', () => {
   it('deletes the group', async () => {
     const { body: group } = await api.createGroup();
