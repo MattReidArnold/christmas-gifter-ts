@@ -1,0 +1,31 @@
+info:
+  name: Update project
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/projects/{{projectId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "status": "scheduled",
+        "dueDate": "2026-12-20"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+        test("updates status and due date", function () {
+          expect(res.body.status).to.equal("scheduled");
+          expect(res.body.dueDate).to.equal("2026-12-20");
+        });
+
+settings:
+  encodeUrl: true

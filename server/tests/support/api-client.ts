@@ -14,6 +14,30 @@ export type GroupJson = {
   participants: ParticipantJson[];
 };
 
+export type AddressJson = {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+};
+
+export type ProjectJson = {
+  id: string;
+  name: string;
+  status: string;
+  dueDate: string;
+  address: AddressJson;
+  advisorId: string;
+};
+
+export type ProjectInput = {
+  name?: string;
+  status?: string;
+  dueDate?: string;
+  address?: Partial<AddressJson>;
+  advisorId?: string;
+};
+
 export type FailureJson = {
   failure: { type: string; reason: string };
 };
@@ -43,8 +67,18 @@ export const failureType = (response: ApiResponse<unknown>): string =>
 
 export const uniqueGroupName = () => `Integration ${randomUUID()}`;
 
+export const uniqueProjectName = () => `Project ${randomUUID()}`;
+
+const defaultAddress: AddressJson = {
+  street: '123 Main St',
+  city: 'Austin',
+  state: 'TX',
+  postalCode: '78701',
+};
+
 export const createApiClient = () => {
   const createdGroupIds = new Set<string>();
+  const createdProjectIds = new Set<string>();
 
   const createGroup = async (name: string = uniqueGroupName()) => {
     const response = await request<GroupJson>('POST', '/api/groups', { name });
@@ -60,6 +94,29 @@ export const createApiClient = () => {
       `/api/groups/${groupId}`
     );
     createdGroupIds.delete(groupId);
+    return response;
+  };
+
+  const createProject = async (input: ProjectInput = {}) => {
+    const response = await request<ProjectJson>('POST', '/api/projects', {
+      name: input.name ?? uniqueProjectName(),
+      status: input.status ?? 'lead',
+      dueDate: input.dueDate ?? '2026-11-15',
+      address: { ...defaultAddress, ...input.address },
+      advisorId: input.advisorId ?? 'advisor-1',
+    });
+    if (response.status === 201) {
+      createdProjectIds.add(response.body.id);
+    }
+    return response;
+  };
+
+  const deleteProject = async (projectId: string) => {
+    const response = await request<undefined>(
+      'DELETE',
+      `/api/projects/${projectId}`
+    );
+    createdProjectIds.delete(projectId);
     return response;
   };
 
@@ -96,8 +153,25 @@ export const createApiClient = () => {
         'DELETE',
         `/api/groups/${groupId}/participants/${participantId}`
       ),
+    createProject,
+    listProjects: (query: Record<string, string> = {}) => {
+      const params = new URLSearchParams(query);
+      const suffix = params.toString();
+      return request<ProjectJson[]>(
+        'GET',
+        `/api/projects${suffix ? `?${suffix}` : ''}`
+      );
+    },
+    getProject: (projectId: string) =>
+      request<ProjectJson>('GET', `/api/projects/${projectId}`),
+    updateProject: (projectId: string, changes: ProjectInput) =>
+      request<ProjectJson>('PUT', `/api/projects/${projectId}`, changes),
+    deleteProject,
     cleanup: async () => {
-      await Promise.all([...createdGroupIds].map(deleteGroup));
+      await Promise.all([
+        ...[...createdGroupIds].map(deleteGroup),
+        ...[...createdProjectIds].map(deleteProject),
+      ]);
     },
   };
 };

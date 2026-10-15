@@ -9,4 +9,5 @@ export const paths = {
     `${paths.group(groupId)}/participants/new`,
   editParticipant: (groupId: string, participantId: string) =>
     `${paths.group(groupId)}/participants/${segment(participantId)}/edit`,
+  projects: () => '/projects',
 }
