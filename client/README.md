@@ -27,7 +27,7 @@ Every screen and dialog has its own URL, so refreshing the page, using the back 
 | `/groups/:groupId/participants/new`          | Group detail with "Add participant" dialog  |
 | `/groups/:groupId/participants/:id/edit`     | Group detail with "Edit participant" dialog |
 
-The route tree lives in `src/router.tsx` and URLs are built with the helpers in `src/paths.ts`. Each route's loader fills the TanStack Query cache before the page renders, and pages read it with `useSuspenseQuery`. Unknown groups and participants show a "not found" page.
+The route tree lives in `src/router.tsx` and URLs are built with the helpers in `src/paths.ts`. Each route's loader fills the TanStack Query cache before the page renders, and pages read it with `useSuspenseQuery`. Loaders reuse cached data that is less than 30 seconds old and has not been marked out of date; otherwise they wait for the server. Unknown groups and participants show a "not found" page.
 
 Every signed-in page sits under the pathless `AppLayout` route (`src/layouts/AppLayout.tsx`). When login is added, put the auth check on that route and add `/login` as its sibling. All API calls go through `apiFetch` in `src/api/http.ts`, which is the place to attach credentials and handle `401` responses.
 

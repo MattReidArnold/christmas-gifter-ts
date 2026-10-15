@@ -1,8 +1,4 @@
-import type {
-  EnsureQueryDataOptions,
-  QueryClient,
-  QueryKey,
-} from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import { data, redirect, type LoaderFunctionArgs, type RouteObject } from 'react-router'
 
 import { groupQuery, groupsQuery } from '#src/api/groups.ts'
@@ -20,19 +16,9 @@ import { NotFoundPage } from '#src/pages/NotFoundPage.tsx'
 import { RouteErrorPage } from '#src/pages/RouteErrorPage.tsx'
 import { paths } from '#src/paths.ts'
 
-// Serves cached data immediately (refreshing it in the background) unless it
-// was invalidated, e.g. by a delete, in which case it waits for the server.
-const loadQuery = <TData, TQueryKey extends QueryKey>(
-  queryClient: QueryClient,
-  options: EnsureQueryDataOptions<TData, Error, TData, TQueryKey>,
-): Promise<TData> =>
-  queryClient.getQueryState(options.queryKey)?.isInvalidated
-    ? queryClient.fetchQuery(options)
-    : queryClient.ensureQueryData({ ...options, revalidateIfStale: true })
-
 const loadGroup = async (queryClient: QueryClient, groupId = '') => {
   try {
-    return await loadQuery(queryClient, groupQuery(groupId))
+    return await queryClient.query(groupQuery(groupId))
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       throw data('Group not found', { status: 404 })
@@ -59,7 +45,7 @@ export const createRoutes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'groups',
             loader: async () => {
-              await loadQuery(queryClient, groupsQuery())
+              await queryClient.query(groupsQuery())
               return null
             },
             element: <GroupsPage />,
