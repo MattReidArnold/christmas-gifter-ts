@@ -1,0 +1,41 @@
+info:
+  name: Create project
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/projects"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Furnace install",
+        "status": "lead",
+        "dueDate": "2026-11-15",
+        "address": {
+          "street": "123 Main St",
+          "city": "Austin",
+          "state": "TX",
+          "postalCode": "78701"
+        },
+        "advisorId": "advisor-1"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        bru.setVar("projectId", res.body.id);
+    - type: tests
+      code: |-
+        test("returns 201", function () {
+          expect(res.status).to.equal(201);
+        });
+
+        test("stores the due date as YYYY-MM-DD", function () {
+          expect(res.body.dueDate).to.equal("2026-11-15");
+        });
+
+settings:
+  encodeUrl: true

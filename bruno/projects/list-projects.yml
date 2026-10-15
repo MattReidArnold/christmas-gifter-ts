@@ -1,0 +1,25 @@
+info:
+  name: List projects
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/projects?status=lead,quoted&advisorId=advisor-1&sort=dueDate"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+        test("includes the created project", function () {
+          expect(res.body).to.be.an("array");
+          const ids = res.body.map((project) => project.id);
+          expect(ids).to.include(bru.getVar("projectId"));
+        });
+
+settings:
+  encodeUrl: true

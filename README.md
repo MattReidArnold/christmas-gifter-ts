@@ -52,15 +52,20 @@ The client dev server forwards `/api` requests to the server on port 4000.
 | `POST`   | `/api/groups/:groupId/participants`                | Add a participant (`{ name, exclusions }`)      |
 | `PUT`    | `/api/groups/:groupId/participants/:participantId` | Update a participant (`{ name?, exclusions? }`) |
 | `DELETE` | `/api/groups/:groupId/participants/:participantId` | Remove a participant                            |
+| `GET`    | `/api/projects`                                    | List projects (`status`, `advisorId`, `sort`)   |
+| `POST`   | `/api/projects`                                    | Create a project                                |
+| `GET`    | `/api/projects/:projectId`                         | Get a project                                   |
+| `PUT`    | `/api/projects/:projectId`                         | Update a project (partial changes)              |
+| `DELETE` | `/api/projects/:projectId`                         | Delete a project                                |
 
-Group and participant changes respond with the updated group. Failures respond with `{ failure: { type, reason } }`.
+Group and participant changes respond with the updated group. Projects are a separate HVAC install-opportunity resource (`name`, `status`, `dueDate`, `address`, `advisorId`). List supports `status` (comma-separated), `advisorId`, and `sort` (`dueDate` or `-dueDate`). Failures respond with `{ failure: { type, reason } }`.
 
 ## Testing
 
 The server has two Vitest suites. Run them from `server/`:
 
 - `npm test` runs the unit tests for the domain and application layers. They need no database or running server. Use `npm run test:watch` while developing.
-- `npm run test:integration` sends HTTP requests to a running API, so start MongoDB and the server first (`npm run dev` or `docker compose up`). The tests target `http://localhost:4000` by default; set `API_BASE_URL` to point them elsewhere. They use the dev database and delete every group they create.
+- `npm run test:integration` sends HTTP requests to a running API, so start MongoDB and the server first (`npm run dev` or `docker compose up`). The tests target `http://localhost:4000` by default; set `API_BASE_URL` to point them elsewhere. They use the dev database and delete every group and project they create.
 - `npm run typecheck` type-checks the source and the tests.
 
 The client tests (`npm test` in `client/`) render the whole route tree against an in-memory fake of the API, so they need no server. See [client/README.md](client/README.md) for the selector conventions UI tests should follow.

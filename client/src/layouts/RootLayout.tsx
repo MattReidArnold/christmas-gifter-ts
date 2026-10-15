@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import LinearProgress from '@mui/material/LinearProgress'
 import Link from '@mui/material/Link'
+import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import type { ReactNode } from 'react'
 import { Link as RouterLink, Outlet, useNavigation } from 'react-router'
@@ -15,16 +16,40 @@ export function RootLayout({ children }: { children?: ReactNode }) {
   return (
     <Box>
       <AppBar position="static" component="header">
-        <Toolbar>
+        <Toolbar sx={{ gap: 3 }}>
           <Link
             component={RouterLink}
             to={paths.groups()}
             color="inherit"
             underline="none"
             variant="h6"
+            sx={{ flexGrow: 1 }}
           >
             Christmas Gifter
           </Link>
+          <Stack
+            component="nav"
+            direction="row"
+            spacing={2}
+            aria-label="Primary"
+          >
+            <Link
+              component={RouterLink}
+              to={paths.groups()}
+              color="inherit"
+              underline="hover"
+            >
+              Groups
+            </Link>
+            <Link
+              component={RouterLink}
+              to={paths.projects()}
+              color="inherit"
+              underline="hover"
+            >
+              Projects
+            </Link>
+          </Stack>
         </Toolbar>
         {navigation.state === 'loading' && (
           <LinearProgress

@@ -11,6 +11,39 @@ export interface Group {
   participants: Participant[]
 }
 
+export type ProjectStatus =
+  | 'lead'
+  | 'quoted'
+  | 'scheduled'
+  | 'installed'
+  | 'lost'
+
+export const PROJECT_STATUSES: ProjectStatus[] = [
+  'lead',
+  'quoted',
+  'scheduled',
+  'installed',
+  'lost',
+]
+
+export type ProjectSort = 'dueDate' | '-dueDate'
+
+export interface Address {
+  street: string
+  city: string
+  state: string
+  postalCode: string
+}
+
+export interface Project {
+  id: string
+  name: string
+  status: ProjectStatus
+  dueDate: string
+  address: Address
+  advisorId: string
+}
+
 export interface Failure {
   type: string
   reason: string

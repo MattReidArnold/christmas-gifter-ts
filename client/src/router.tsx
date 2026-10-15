@@ -3,6 +3,10 @@ import { data, redirect, type LoaderFunctionArgs, type RouteObject } from 'react
 
 import { groupQuery, groupsQuery } from '#src/api/groups.ts'
 import { ApiError } from '#src/api/http.ts'
+import {
+  projectListParamsFromSearch,
+  projectsQuery,
+} from '#src/api/projects.ts'
 import { AppLayout } from '#src/layouts/AppLayout.tsx'
 import { RootLayout } from '#src/layouts/RootLayout.tsx'
 import {
@@ -13,6 +17,7 @@ import {
 } from '#src/pages/GroupDetailPage.tsx'
 import { GroupsPage, NewGroupRoute } from '#src/pages/GroupsPage.tsx'
 import { NotFoundPage } from '#src/pages/NotFoundPage.tsx'
+import { ProjectsPage } from '#src/pages/ProjectsPage.tsx'
 import { RouteErrorPage } from '#src/pages/RouteErrorPage.tsx'
 import { paths } from '#src/paths.ts'
 
@@ -73,6 +78,17 @@ export const createRoutes = (queryClient: QueryClient): RouteObject[] => [
                 element: <EditParticipantRoute />,
               },
             ],
+          },
+          {
+            path: 'projects',
+            loader: async ({ request }: LoaderFunctionArgs) => {
+              const params = projectListParamsFromSearch(
+                new URL(request.url).searchParams,
+              )
+              await queryClient.query(projectsQuery(params))
+              return null
+            },
+            element: <ProjectsPage />,
           },
         ],
       },

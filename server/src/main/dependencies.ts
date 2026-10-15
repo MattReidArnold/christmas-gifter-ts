@@ -3,6 +3,7 @@ import uuidIdGenerator from '#src/infrastructure/id/uuid-id-generator';
 import winstonLogger from '#src/infrastructure/logger/winston-logger';
 import mongoConnect from '#src/infrastructure/persistence/mongodb/connect';
 import MongoGiftExchangeGroupRepository from '#src/infrastructure/persistence/mongodb/repositories/mongo-gift-exchange-group-repository';
+import MongoProjectRepository from '#src/infrastructure/persistence/mongodb/repositories/mongo-project-repository';
 import { env } from '#src/main/env';
 
 export default async (): Promise<Dependencies> => {
@@ -11,6 +12,7 @@ export default async (): Promise<Dependencies> => {
   return {
     logger,
     groupRepository: new MongoGiftExchangeGroupRepository(),
+    projectRepository: new MongoProjectRepository(),
     idGenerator: uuidIdGenerator(),
   };
 };
