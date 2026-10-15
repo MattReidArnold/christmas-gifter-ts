@@ -60,6 +60,22 @@ export default class GiftExchangeGroup {
     return ok(new GiftExchangeGroup({ name: trimmedName, participants: [] }));
   }
 
+  rename(
+    name: string
+  ): Result<GiftExchangeGroup, Failure<GiftExchangeGroupError.GroupNameEmpty>> {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return err(groupNameEmptyFailure());
+    }
+    return ok(
+      new GiftExchangeGroup({
+        id: this.id,
+        name: trimmedName,
+        participants: this.participants,
+      })
+    );
+  }
+
   findParticipant(participantId: string): Participant | undefined {
     return this.participants.find(({ id }) => id === participantId);
   }
