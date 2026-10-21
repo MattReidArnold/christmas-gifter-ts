@@ -1,0 +1,29 @@
+info:
+  name: Rename group
+  type: http
+  seq: 8
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/groups/{{groupId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Friends 2026"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns 200", function () {
+          expect(res.status).to.equal(200);
+        });
+
+        test("renames the group", function () {
+          expect(res.body.name).to.equal("Friends 2026");
+        });
+
+settings:
+  encodeUrl: true

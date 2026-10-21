@@ -69,6 +69,8 @@ export const createApiClient = () => {
     listGroups: () => request<GroupJson[]>('GET', '/api/groups'),
     getGroup: (groupId: string) =>
       request<GroupJson>('GET', `/api/groups/${groupId}`),
+    renameGroup: (groupId: string, name: unknown) =>
+      request<GroupJson>('PUT', `/api/groups/${groupId}`, { name }),
     deleteGroup,
     addParticipant: (
       groupId: string,

@@ -4,12 +4,14 @@ import { DeleteGroupUseCase } from './use-cases/delete-group';
 import { GetGroupUseCase } from './use-cases/get-group';
 import { ListGroupsUseCase } from './use-cases/list-groups';
 import { RemoveParticipantUseCase } from './use-cases/remove-participant';
+import { RenameGroupUseCase } from './use-cases/rename-group';
 import { UpdateParticipantUseCase } from './use-cases/update-participant';
 
 export default interface UseCases {
   createGroup: CreateGroupUseCase;
   getGroup: GetGroupUseCase;
   listGroups: ListGroupsUseCase;
+  renameGroup: RenameGroupUseCase;
   deleteGroup: DeleteGroupUseCase;
   addParticipant: AddParticipantUseCase;
   updateParticipant: UpdateParticipantUseCase;
