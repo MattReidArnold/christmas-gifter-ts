@@ -7,9 +7,10 @@ type SeedParticipant = { id: string; name: string; exclusions?: string[] };
 export const seedGroup = async (
   repository: GiftExchangeGroupRepository,
   participants: SeedParticipant[] = [],
-  name = 'Family'
+  name = 'Family',
+  ownerId = 'owner-1'
 ): Promise<GiftExchangeGroup> => {
-  let group = expectOk(GiftExchangeGroup.create(name));
+  let group = expectOk(GiftExchangeGroup.create(name, ownerId));
   for (const { id, name: participantName, exclusions = [] } of participants) {
     group = expectOk(
       group.addParticipant({ id, name: participantName, exclusions })

@@ -6,6 +6,9 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/api/groups"
+  headers:
+    - name: Cookie
+      value: "{{sessionCookie}}"
   body:
     type: json
     data: |-
@@ -26,6 +29,12 @@ runtime:
 
         test("starts with no participants", function () {
           expect(res.body.participants).to.eql([]);
+        });
+
+        test("records the signed-in user as owner", function () {
+          expect(res.body.members).to.eql([
+            { userId: bru.getVar("userId"), role: "owner" },
+          ]);
         });
 
 settings:

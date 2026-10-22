@@ -6,6 +6,9 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/api/groups/{{groupId}}"
+  headers:
+    - name: Cookie
+      value: "{{sessionCookie}}"
 
 runtime:
   scripts:

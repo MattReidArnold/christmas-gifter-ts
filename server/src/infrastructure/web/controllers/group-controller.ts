@@ -72,8 +72,17 @@ const groupController = ({
   removeParticipant,
 }: GroupControllerDeps) => {
   const create = async (req: Request, res: Response, _next: NextFunction) => {
+    const ownerId = req.user?.id;
+    if (!ownerId) {
+      return res.status(401).send({
+        failure: {
+          type: 'UNAUTHENTICATED',
+          reason: 'Sign in to continue',
+        },
+      });
+    }
     const name = stringOrUndefined(req.body?.name) ?? '';
-    const result = await createGroup.execute(name);
+    const result = await createGroup.execute(name, ownerId);
     if (!result.ok) {
       logger.info('failed to create group', JSON.stringify(result.error));
       return sendFailure(res, result.error);

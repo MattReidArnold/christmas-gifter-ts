@@ -14,11 +14,12 @@ describe('createGroup', () => {
 
   it('saves a new group and returns it with an id', async () => {
     const group = expectOk(
-      await createGroup({ groupRepository }).execute('  Family  ')
+      await createGroup({ groupRepository }).execute('  Family  ', 'owner-1')
     );
 
     expect(group.id).toBeDefined();
     expect(group.name).toBe('Family');
+    expect(group.members).toEqual([{ userId: 'owner-1', role: 'owner' }]);
     expect(await groupRepository.getById(group.id ?? '')).toEqual(group);
   });
 
@@ -26,7 +27,7 @@ describe('createGroup', () => {
     const add = vi.spyOn(groupRepository, 'add');
 
     const failure = expectErr(
-      await createGroup({ groupRepository }).execute('   ')
+      await createGroup({ groupRepository }).execute('   ', 'owner-1')
     );
 
     expect(failure.type).toBe(GiftExchangeGroupError.GroupNameEmpty);

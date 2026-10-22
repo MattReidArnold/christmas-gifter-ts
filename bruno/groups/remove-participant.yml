@@ -6,6 +6,9 @@ info:
 http:
   method: DELETE
   url: "{{baseUrl}}/api/groups/{{groupId}}/participants/{{otherParticipantId}}"
+  headers:
+    - name: Cookie
+      value: "{{sessionCookie}}"
 
 runtime:
   scripts:

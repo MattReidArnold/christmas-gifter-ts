@@ -1,6 +1,7 @@
 const segment = (value: string) => encodeURIComponent(value)
 
 export const paths = {
+  login: () => '/login',
   groups: () => '/groups',
   newGroup: () => '/groups/new',
   group: (groupId: string) => `/groups/${segment(groupId)}`,

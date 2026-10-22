@@ -1,4 +1,5 @@
 import type { Failure } from '#src/api/types.ts'
+import { paths } from '#src/paths.ts'
 
 export class ApiError extends Error {
   readonly status: number
@@ -46,6 +47,9 @@ export const apiFetch = async <T>(
   })
   const responseBody = await parseBody(response)
   if (!response.ok) {
+    if (response.status === 401 && window.location.pathname !== paths.login()) {
+      window.location.assign(paths.login())
+    }
     throw new ApiError(response.status, failureFrom(responseBody))
   }
   return responseBody as T

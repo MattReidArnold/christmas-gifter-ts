@@ -11,8 +11,11 @@ import { createRoutes } from '#src/router.tsx'
 import { createFakeApi } from '#src/test/fakeApi.ts'
 
 // Renders the full route tree at `path`, as if the page had just been loaded or refreshed.
-export const renderApp = (path: string, { groups = [] }: { groups?: Group[] } = {}) => {
-  const api = createFakeApi(groups)
+export const renderApp = (
+  path: string,
+  { groups = [], signedIn = true }: { groups?: Group[]; signedIn?: boolean } = {},
+) => {
+  const api = createFakeApi(groups, { signedIn })
   vi.stubGlobal('fetch', api.fetch)
   const queryClient = createQueryClient()
   const router = createMemoryRouter(createRoutes(queryClient), {

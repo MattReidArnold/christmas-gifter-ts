@@ -21,6 +21,7 @@ describe('POST /api/groups', () => {
       id: expect.any(String),
       name,
       participants: [],
+      members: [{ userId: api.userId, role: 'owner' }],
     });
   });
 
@@ -29,6 +30,17 @@ describe('POST /api/groups', () => {
 
     expect(response.status).toBe(422);
     expect(failureType(response)).toBe('GROUP_NAME_EMPTY');
+  });
+});
+
+describe('authentication', () => {
+  it('rejects a group request without a session', async () => {
+    const anonymous = createApiClient({ session: false });
+
+    const response = await anonymous.listGroups();
+
+    expect(response.status).toBe(401);
+    expect(failureType(response)).toBe('UNAUTHENTICATED');
   });
 });
 
@@ -48,6 +60,19 @@ describe('GET /api/groups/:groupId', () => {
     const { body: group } = await api.createGroup();
 
     const response = await api.getGroup(group.id);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(group);
+  });
+
+  it('returns the group to another signed-in user', async () => {
+    const { body: group } = await api.createGroup();
+    const other = createApiClient({
+      email: 'other@example.com',
+      name: 'Other User',
+    });
+
+    const response = await other.getGroup(group.id);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(group);

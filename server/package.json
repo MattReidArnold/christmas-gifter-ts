@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "dist/index.js",
   "imports": {
     "#src/*": {
@@ -13,8 +14,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx watch --conditions=development src/index.ts",
+    "start": "node --env-file=.env dist/index.js",
+    "dev": "tsx watch --conditions=development --env-file=.env src/index.ts",
     "lint": "oxlint",
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",
@@ -37,6 +38,8 @@
     "vitest": "^5.0.3"
   },
   "dependencies": {
+    "@better-auth/mongo-adapter": "^1.7.12",
+    "better-auth": "^1.7.12",
     "express": "^5.2.1",
     "mongoose": "^9.11.0",
     "morgan": "^1.12.1",

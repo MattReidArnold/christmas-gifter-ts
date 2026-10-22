@@ -2,11 +2,13 @@ import { act, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import type { Group } from '#src/api/types.ts'
+import { ownerMember } from '#src/test/fakeApi.ts'
 import { renderApp } from '#src/test/renderApp.tsx'
 
 const family: Group = {
   id: 'family',
   name: 'Family',
+  members: [ownerMember],
   participants: [
     { id: 'alice', name: 'Alice', exclusions: [] },
     { id: 'bob', name: 'Bob', exclusions: ['alice'] },
@@ -174,4 +176,41 @@ it('shows not found for an unknown route', async () => {
   renderApp('/nowhere')
 
   await pageHeading('Page not found')
+})
+
+describe('sign in', () => {
+  it('shows the Google sign-in button', async () => {
+    renderApp('/login', { signedIn: false })
+
+    expect(
+      await screen.findByRole('button', { name: 'Sign in with Google' }),
+    ).toBeInTheDocument()
+  })
+
+  it('sends a signed-out visitor to the login page', async () => {
+    const { router } = renderApp('/groups', { signedIn: false })
+
+    expect(
+      await screen.findByRole('button', { name: 'Sign in with Google' }),
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
+  })
+
+  it('sends a signed-in visitor away from the login page', async () => {
+    const { router } = renderApp('/login')
+
+    await pageHeading('Groups')
+    expect(router.state.location.pathname).toBe('/groups')
+  })
+
+  it('signs out and returns to the login page', async () => {
+    const { user, router } = renderApp('/groups')
+
+    await user.click(await screen.findByRole('button', { name: 'Sign out' }))
+
+    expect(
+      await screen.findByRole('button', { name: 'Sign in with Google' }),
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
+  })
 })

@@ -20,7 +20,13 @@ const trimmedName = name.trim();
 if (!trimmedName) {
   return err(groupNameEmptyFailure());
 }
-return ok(new GiftExchangeGroup({ name: trimmedName, participants: [] }));
+return ok(
+  new GiftExchangeGroup({
+    name: trimmedName,
+    participants: [],
+    members: [{ userId: ownerId, role: 'owner' }],
+  })
+);
 ```
 
 **Pass a failure up.** Check `ok`, and return the result unchanged if it failed. TypeScript only lets you read `result.value` after the check. From [`update-participant.ts`](../../application/use-cases/update-participant.ts):

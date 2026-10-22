@@ -21,6 +21,7 @@ export default class InMemoryGroupRepository
       id,
       name: group.name,
       participants: group.participants,
+      members: group.members,
     });
     this.groups.set(id, saved);
     return saved;

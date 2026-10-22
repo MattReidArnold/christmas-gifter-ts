@@ -33,7 +33,7 @@ export type Result<T, E> = Ok<T> | Err<E>;
  * that succeeds without producing a value.
  *
  * @example
- * return ok(new GiftExchangeGroup({ name, participants: [] }));
+ * return ok(new GiftExchangeGroup({ name, participants: [], members }));
  */
 export const ok = <T>(value: T): Ok<T> => ({ ok: true, value });
 

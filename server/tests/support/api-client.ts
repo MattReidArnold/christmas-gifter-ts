@@ -8,10 +8,16 @@ export type ParticipantJson = {
   exclusions: string[];
 };
 
+export type MemberJson = {
+  userId: string;
+  role: 'owner' | 'member';
+};
+
 export type GroupJson = {
   id: string;
   name: string;
   participants: ParticipantJson[];
+  members: MemberJson[];
 };
 
 export type FailureJson = {
@@ -23,19 +29,18 @@ export type ApiResponse<T> = {
   body: T;
 };
 
-const request = async <T>(
-  method: string,
-  path: string,
-  body?: unknown
-): Promise<ApiResponse<T>> => {
-  const response = await fetch(`${baseUrl}${path}`, {
-    method,
-    headers:
-      body === undefined ? undefined : { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const text = await response.text();
-  return { status: response.status, body: text ? JSON.parse(text) : undefined };
+type SessionOptions = {
+  session?: boolean;
+  email?: string;
+  name?: string;
+};
+
+const cookieHeader = (response: Response): string => {
+  const cookies =
+    typeof response.headers.getSetCookie === 'function'
+      ? response.headers.getSetCookie()
+      : [];
+  return cookies.map((cookie) => cookie.split(';')[0]).join('; ');
 };
 
 export const failureType = (response: ApiResponse<unknown>): string =>
@@ -43,11 +48,71 @@ export const failureType = (response: ApiResponse<unknown>): string =>
 
 export const uniqueGroupName = () => `Integration ${randomUUID()}`;
 
-export const createApiClient = () => {
+export const createApiClient = ({
+  session = true,
+  email = `integration-${randomUUID()}@example.com`,
+  name = 'Integration User',
+}: SessionOptions = {}) => {
   const createdGroupIds = new Set<string>();
+  let cookie: string | undefined;
+  let userId = '';
 
-  const createGroup = async (name: string = uniqueGroupName()) => {
-    const response = await request<GroupJson>('POST', '/api/groups', { name });
+  const ensureSession = async () => {
+    if (!session) {
+      return undefined;
+    }
+    if (cookie) {
+      return cookie;
+    }
+    const response = await fetch(`${baseUrl}/api/dev/session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name }),
+    });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(
+        `Dev session failed with ${response.status}: ${text || 'empty body'}`
+      );
+    }
+    cookie = cookieHeader(response);
+    const body = (await response.json()) as { user: { id: string } };
+    userId = body.user.id;
+    if (!cookie) {
+      throw new Error('Dev session did not set a cookie');
+    }
+    return cookie;
+  };
+
+  const request = async <T>(
+    method: string,
+    path: string,
+    body?: unknown
+  ): Promise<ApiResponse<T>> => {
+    const sessionCookie = path === '/health' ? undefined : await ensureSession();
+    const headers = new Headers();
+    if (body !== undefined) {
+      headers.set('Content-Type', 'application/json');
+    }
+    if (sessionCookie) {
+      headers.set('cookie', sessionCookie);
+    }
+    const response = await fetch(`${baseUrl}${path}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await response.text();
+    return {
+      status: response.status,
+      body: text ? JSON.parse(text) : undefined,
+    };
+  };
+
+  const createGroup = async (groupName: string = uniqueGroupName()) => {
+    const response = await request<GroupJson>('POST', '/api/groups', {
+      name: groupName,
+    });
     if (response.status === 201) {
       createdGroupIds.add(response.body.id);
     }
@@ -64,13 +129,16 @@ export const createApiClient = () => {
   };
 
   return {
+    get userId() {
+      return userId;
+    },
     health: () => request<unknown>('GET', '/health'),
     createGroup,
     listGroups: () => request<GroupJson[]>('GET', '/api/groups'),
     getGroup: (groupId: string) =>
       request<GroupJson>('GET', `/api/groups/${groupId}`),
-    renameGroup: (groupId: string, name: unknown) =>
-      request<GroupJson>('PUT', `/api/groups/${groupId}`, { name }),
+    renameGroup: (groupId: string, groupName: unknown) =>
+      request<GroupJson>('PUT', `/api/groups/${groupId}`, { name: groupName }),
     deleteGroup,
     addParticipant: (
       groupId: string,
