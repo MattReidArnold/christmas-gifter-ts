@@ -14,8 +14,11 @@ type CreateGroupDeps = {
 };
 
 const createGroup = ({ groupRepository }: CreateGroupDeps) => {
-  const execute = async (name: string): Promise<CreateGroupResult> => {
-    const result = GiftExchangeGroup.create(name);
+  const execute = async (
+    name: string,
+    ownerId: string
+  ): Promise<CreateGroupResult> => {
+    const result = GiftExchangeGroup.create(name, ownerId);
     if (!result.ok) {
       return result;
     }

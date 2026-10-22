@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import GiftExchangeGroupRepository from '#src/application/ports/gift-exchange-group-repository';
 import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import GiftExchangeGroupModel, {
+  toMemberAttrs,
   toParticipantAttrs,
 } from '#src/infrastructure/persistence/mongodb/models/gift-exchange-group';
 
@@ -27,6 +28,7 @@ export default class MongoGiftExchangeGroupRepository
     const doc = await GiftExchangeGroupModel.create({
       name: group.name,
       participants: group.participants.map(toParticipantAttrs),
+      members: group.members.map(toMemberAttrs),
     });
     return doc.toEntity();
   }
@@ -40,6 +42,7 @@ export default class MongoGiftExchangeGroupRepository
     }
     doc.name = group.name;
     doc.participants = group.participants.map(toParticipantAttrs);
+    doc.members = group.members.map(toMemberAttrs);
     const updatedDoc = await doc.save();
     return updatedDoc.toEntity();
   }

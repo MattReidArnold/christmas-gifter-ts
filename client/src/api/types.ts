@@ -5,10 +5,18 @@ export interface Participant {
   exclusions: string[]
 }
 
+export type GroupMemberRole = 'owner' | 'member'
+
+export interface GroupMember {
+  userId: string
+  role: GroupMemberRole
+}
+
 export interface Group {
   id: string
   name: string
   participants: Participant[]
+  members: GroupMember[]
 }
 
 export interface Failure {

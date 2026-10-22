@@ -19,6 +19,7 @@ Every screen and dialog has its own URL, so refreshing the page, using the back 
 
 | Path                                         | Shows                                       |
 | -------------------------------------------- | ------------------------------------------- |
+| `/login`                                     | Google sign-in. Signed-in visitors go to `/groups` |
 | `/`                                          | Redirects to `/groups`                      |
 | `/groups`                                    | Group list                                  |
 | `/groups/new`                                | Group list with the "New group" dialog      |
@@ -29,7 +30,7 @@ Every screen and dialog has its own URL, so refreshing the page, using the back 
 
 The route tree lives in `src/router.tsx` and URLs are built with the helpers in `src/paths.ts`. Each route's loader fills the TanStack Query cache before the page renders, and pages read it with `useSuspenseQuery`. Loaders reuse cached data that is less than 30 seconds old and has not been marked out of date; otherwise they wait for the server. Unknown groups and participants show a "not found" page.
 
-Every signed-in page sits under the pathless `AppLayout` route (`src/layouts/AppLayout.tsx`). When login is added, put the auth check on that route and add `/login` as its sibling. All API calls go through `apiFetch` in `src/api/http.ts`, which is the place to attach credentials and handle `401` responses.
+Every signed-in page sits under the pathless `AppLayout` route (`src/layouts/AppLayout.tsx`). That route's loader sends signed-out visitors to `/login`. All API calls go through `apiFetch` in `src/api/http.ts`, which sends the visitor to `/login` on a `401`.
 
 ## Test selectors
 

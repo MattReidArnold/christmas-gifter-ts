@@ -1,6 +1,14 @@
 import { vi } from 'vitest'
 
-import type { Group, Participant } from '#src/api/types.ts'
+import type { Group, GroupMember, Participant } from '#src/api/types.ts'
+
+export const signedInUser = {
+  id: 'user-1',
+  email: 'ada@example.com',
+  name: 'Ada',
+}
+
+export const ownerMember: GroupMember = { userId: signedInUser.id, role: 'owner' }
 
 const json = (status: number, body?: unknown) =>
   new Response(body === undefined ? null : JSON.stringify(body), {
@@ -10,6 +18,22 @@ const json = (status: number, body?: unknown) =>
 
 const failure = (status: number, type: string, reason: string) =>
   json(status, { failure: { type, reason } })
+
+const sessionBody = () => ({
+  session: {
+    id: 'session-1',
+    userId: signedInUser.id,
+    expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
+    token: 'token',
+  },
+  user: {
+    ...signedInUser,
+    emailVerified: true,
+    image: null,
+    createdAt: new Date(0).toISOString(),
+    updatedAt: new Date(0).toISOString(),
+  },
+})
 
 const groupNotFound = () =>
   failure(404, 'GROUP_NOT_FOUND', 'Group with that id was not found')
@@ -32,7 +56,11 @@ const participantNameInvalid = (group: Group, name: string, ignoreId?: string) =
 }
 
 // In-memory stand-in for the server's `/api/groups` endpoints.
-export const createFakeApi = (initialGroups: Group[] = []) => {
+export const createFakeApi = (
+  initialGroups: Group[] = [],
+  { signedIn = true }: { signedIn?: boolean } = {},
+) => {
+  let isSignedIn = signedIn
   let groups: Group[] = structuredClone(initialGroups)
   let nextId = 1
   const newId = (prefix: string) => `${prefix}-${nextId++}`
@@ -43,9 +71,19 @@ export const createFakeApi = (initialGroups: Group[] = []) => {
   }
 
   const handle = async (input: RequestInfo | URL, init: RequestInit = {}) => {
-    const { pathname } = new URL(String(input), 'http://localhost')
+    const url = input instanceof Request ? input.url : String(input)
+    const { pathname } = new URL(url, 'http://localhost')
     const method = init.method ?? 'GET'
     const body = init.body ? JSON.parse(String(init.body)) : {}
+
+    if (pathname === '/api/auth/get-session') {
+      return json(200, isSignedIn ? sessionBody() : null)
+    }
+    if (pathname === '/api/auth/sign-out' && method === 'POST') {
+      isSignedIn = false
+      return json(200, { success: true })
+    }
+
     const [, , , groupId, , participantId] = pathname.split('/')
 
     if (!pathname.startsWith('/api/groups')) {
@@ -60,7 +98,12 @@ export const createFakeApi = (initialGroups: Group[] = []) => {
       if (!name) {
         return failure(422, 'GROUP_NAME_EMPTY', 'Group name cannot be empty')
       }
-      const group: Group = { id: newId('group'), name, participants: [] }
+      const group: Group = {
+        id: newId('group'),
+        name,
+        participants: [],
+        members: [ownerMember],
+      }
       groups = [...groups, group]
       return json(201, group)
     }

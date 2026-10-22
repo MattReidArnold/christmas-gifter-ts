@@ -11,6 +11,9 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+    env_file:
+      - path: ./server/.env
+        required: false
     environment:
       - MONGODB_URI=mongodb://devUser:Password123@mongo:27017/dev
       - PORT=4000

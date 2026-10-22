@@ -1,6 +1,6 @@
-import Logger from './ports/logger';
-import GiftExchangeGroupRepository from './ports/gift-exchange-group-repository';
-import IdGenerator from './ports/id-generator';
+import Logger from './ports/logger.js';
+import GiftExchangeGroupRepository from './ports/gift-exchange-group-repository.js';
+import IdGenerator from './ports/id-generator.js';
 
 export default interface Dependencies {
   logger: Logger;

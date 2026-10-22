@@ -4,7 +4,9 @@ import GiftExchangeGroup from '#src/domain/gift-exchange-group';
 import { GiftExchangeGroupError } from '#src/domain/gift-exchange-group-error';
 import { expectErr, expectOk } from '#tests/support/result';
 
-const emptyGroup = () => expectOk(GiftExchangeGroup.create('Family'));
+const ownerId = 'owner-1';
+
+const emptyGroup = () => expectOk(GiftExchangeGroup.create('Family', ownerId));
 
 const groupWithAliceAndBob = () => {
   const withAlice = expectOk(
@@ -17,14 +19,15 @@ const groupWithAliceAndBob = () => {
 
 describe('GiftExchangeGroup.create', () => {
   it('trims the name and starts with no participants', () => {
-    const group = expectOk(GiftExchangeGroup.create('  Family  '));
+    const group = expectOk(GiftExchangeGroup.create('  Family  ', `  ${ownerId}  `));
 
     expect(group.name).toBe('Family');
     expect(group.participants).toEqual([]);
+    expect(group.members).toEqual([{ userId: ownerId, role: 'owner' }]);
   });
 
   it.each(['', '   '])('rejects the empty name %j', (name) => {
-    const failure = expectErr(GiftExchangeGroup.create(name));
+    const failure = expectErr(GiftExchangeGroup.create(name, ownerId));
 
     expect(failure.type).toBe(GiftExchangeGroupError.GroupNameEmpty);
   });
@@ -36,6 +39,7 @@ describe('GiftExchangeGroup.rename', () => {
       id: 'group-1',
       name: 'Family',
       participants: groupWithAliceAndBob().participants,
+      members: [{ userId: ownerId, role: 'owner' }],
     });
 
     const renamed = expectOk(group.rename('  Friends  '));
@@ -43,6 +47,7 @@ describe('GiftExchangeGroup.rename', () => {
     expect(renamed.id).toBe('group-1');
     expect(renamed.name).toBe('Friends');
     expect(renamed.participants).toEqual(group.participants);
+    expect(renamed.members).toEqual(group.members);
   });
 
   it.each(['', '   '])('rejects the empty name %j', (name) => {
@@ -70,6 +75,7 @@ describe('GiftExchangeGroup.addParticipant', () => {
       name: 'Bob',
       exclusions: ['alice'],
     });
+    expect(updated.members).toEqual(group.members);
   });
 
   it('rejects an empty name', () => {

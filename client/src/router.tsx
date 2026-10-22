@@ -3,6 +3,7 @@ import { data, redirect, type LoaderFunctionArgs, type RouteObject } from 'react
 
 import { groupQuery, groupsQuery } from '#src/api/groups.ts'
 import { ApiError } from '#src/api/http.ts'
+import { sessionQuery } from '#src/api/session.ts'
 import { AppLayout } from '#src/layouts/AppLayout.tsx'
 import { RootLayout } from '#src/layouts/RootLayout.tsx'
 import {
@@ -12,6 +13,7 @@ import {
   RenameGroupRoute,
 } from '#src/pages/GroupDetailPage.tsx'
 import { GroupsPage, NewGroupRoute } from '#src/pages/GroupsPage.tsx'
+import { LoginPage } from '#src/pages/LoginPage.tsx'
 import { NotFoundPage } from '#src/pages/NotFoundPage.tsx'
 import { RouteErrorPage } from '#src/pages/RouteErrorPage.tsx'
 import { paths } from '#src/paths.ts'
@@ -38,7 +40,25 @@ export const createRoutes = (queryClient: QueryClient): RouteObject[] => [
     ),
     children: [
       {
+        path: 'login',
+        loader: async () => {
+          const user = await queryClient.fetchQuery(sessionQuery())
+          if (user) {
+            throw redirect(paths.groups())
+          }
+          return null
+        },
+        element: <LoginPage />,
+      },
+      {
         element: <AppLayout />,
+        loader: async () => {
+          const user = await queryClient.fetchQuery(sessionQuery())
+          if (!user) {
+            throw redirect(paths.login())
+          }
+          return null
+        },
         errorElement: <RouteErrorPage />,
         children: [
           { index: true, loader: () => redirect(paths.groups()) },

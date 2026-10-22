@@ -11,10 +11,18 @@ import {
   participantNotFoundFailure,
 } from '#src/domain/gift-exchange-group-error';
 
+export type GroupMemberRole = 'owner' | 'member';
+
+export interface GroupMember {
+  userId: string;
+  role: GroupMemberRole;
+}
+
 export interface GiftExchangeGroupParams {
   id?: string;
   name: string;
   participants: Participant[];
+  members: GroupMember[];
 }
 
 export interface NewParticipant {
@@ -42,22 +50,35 @@ export default class GiftExchangeGroup {
   readonly id?: string;
   readonly name: string;
   readonly participants: Participant[];
+  readonly members: GroupMember[];
 
   // Rehydrates an existing group without validation; use `create` for new groups.
-  constructor({ id, name, participants }: GiftExchangeGroupParams) {
+  constructor({ id, name, participants, members }: GiftExchangeGroupParams) {
     this.id = id;
     this.name = name;
     this.participants = participants;
+    this.members = members;
   }
 
   static create(
-    name: string
+    name: string,
+    ownerId: string
   ): Result<GiftExchangeGroup, Failure<GiftExchangeGroupError.GroupNameEmpty>> {
     const trimmedName = name.trim();
     if (!trimmedName) {
       return err(groupNameEmptyFailure());
     }
-    return ok(new GiftExchangeGroup({ name: trimmedName, participants: [] }));
+    const trimmedOwnerId = ownerId.trim();
+    if (!trimmedOwnerId) {
+      throw new Error('Group owner id cannot be empty');
+    }
+    return ok(
+      new GiftExchangeGroup({
+        name: trimmedName,
+        participants: [],
+        members: [{ userId: trimmedOwnerId, role: 'owner' }],
+      })
+    );
   }
 
   rename(
@@ -72,6 +93,7 @@ export default class GiftExchangeGroup {
         id: this.id,
         name: trimmedName,
         participants: this.participants,
+        members: this.members,
       })
     );
   }
@@ -171,6 +193,7 @@ export default class GiftExchangeGroup {
       id: this.id,
       name: this.name,
       participants,
+      members: this.members,
     });
   }
 }

@@ -6,6 +6,9 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/api/groups/{{groupId}}/participants"
+  headers:
+    - name: Cookie
+      value: "{{sessionCookie}}"
   body:
     type: json
     data: |-

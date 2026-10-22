@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import WebContext from '#src/infrastructure/web/web-context';
-import health from './health-router';
-import api from './api';
+import health from './health-router.js';
+import api from './api/index.js';
 
 const router = (context: WebContext) => {
   const routes = Router();

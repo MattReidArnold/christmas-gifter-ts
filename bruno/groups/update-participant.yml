@@ -6,6 +6,9 @@ info:
 http:
   method: PUT
   url: "{{baseUrl}}/api/groups/{{groupId}}/participants/{{participantId}}"
+  headers:
+    - name: Cookie
+      value: "{{sessionCookie}}"
   body:
     type: json
     data: |-
