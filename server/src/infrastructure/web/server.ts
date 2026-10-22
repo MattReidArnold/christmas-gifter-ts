@@ -2,8 +2,8 @@ import { toNodeHandler } from 'better-auth/node';
 import express from 'express';
 import morgan from 'morgan';
 
-import router from './routes/index.js';
-import WebContext from './web-context.js';
+import router from '#src/infrastructure/web/routes/index';
+import WebContext from '#src/infrastructure/web/web-context';
 
 const server = (context: WebContext, port: number) => {
   const app = express();

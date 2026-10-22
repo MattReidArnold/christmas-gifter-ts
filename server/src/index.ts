@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-import createAuth from './infrastructure/auth/better-auth.js';
-import app from './infrastructure/web/server.js';
-import dependencies from './main/dependencies.js';
-import { env } from './main/env.js';
-import useCases from './main/use-cases.js';
+import createAuth from '#src/infrastructure/auth/better-auth';
+import app from '#src/infrastructure/web/server';
+import dependencies from '#src/main/dependencies';
+import { env } from '#src/main/env';
+import useCases from '#src/main/use-cases';
 
 dependencies().then((deps) => {
   const db = mongoose.connection.db;
