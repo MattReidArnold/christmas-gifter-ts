@@ -1,6 +1,6 @@
-# christmas-gifter-ts
+# gift-exchange-ts
 
-A Secret Santa style gift assignment app.
+A surprise gift exchange app for drawing names.
 
 - `server/`: Express + Mongoose API written in TypeScript (port 4000)
 - `client/`: React + TypeScript app built with Vite (port 3000)

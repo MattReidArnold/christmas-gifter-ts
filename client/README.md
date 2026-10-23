@@ -1,4 +1,4 @@
-# Christmas Gifter client
+# Gift Exchange client
 
 React + TypeScript app built with [Vite](https://vite.dev/), [Material UI](https://mui.com/), [React Router](https://reactrouter.com/) and [TanStack Query](https://tanstack.com/query).
 

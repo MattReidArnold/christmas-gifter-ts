@@ -38,7 +38,7 @@ export function RootLayout({ children }: { children?: ReactNode }) {
             variant="h6"
             sx={{ flexGrow: 1 }}
           >
-            Christmas Gifter
+            Gift Exchange
           </Link>
           {user ? (
             <Button color="inherit" onClick={() => void signOut()}>
